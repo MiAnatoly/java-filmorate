@@ -14,8 +14,8 @@ import java.util.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    Map<Integer, User> users = new HashMap<>();
-    int idUsers;
+    private final Map<Integer, User> users = new HashMap<>();
+    private int idUsers;
 
     @GetMapping
     public List<User> findAll() {
@@ -29,6 +29,9 @@ public class UserController {
         if (!users.containsKey(user.getId())) {
             String text = "Добавлен";
             validate(user, text);
+            idUsers++;
+            user.setId(idUsers);
+            users.put(user.getId(), user);
         } else
             throw new RuntimeException("Пользователь есть в базе");
         return user;
@@ -39,23 +42,17 @@ public class UserController {
         if (users.containsKey(user.getId())) {
             String text = "Обновлен";
             validate(user, text);
+            users.put(user.getId(), user);
         } else
             throw new RuntimeException("Нет пользователя");
         return user;
     }
 
     void validate(User user, String text) {
-        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" "))
-            throw new ValidationException("Логин не может быть пустым или содержать пробелы");
         if (user.getName() == null || user.getName().isBlank())
             user.setName(user.getLogin());
         if (user.getBirthday().isAfter(LocalDate.now()))
             throw new ValidationException("Дата рождения не может быть позже текущей");
-        if (text.equals("Добавлен")) {
-            idUsers++;
-            user.setId(idUsers);
-        }
-        users.put(user.getId(), user);
         log.debug("{} пользователь: {}, email: {}", text, user.getName(), user.getEmail());
 
     }
