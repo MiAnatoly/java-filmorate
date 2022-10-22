@@ -19,7 +19,6 @@ import java.util.Map;
 public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
     private static final LocalDate LIMIT_DATA = LocalDate.of(1895, 12, 28);
-
     private int idFilms;
 
     @GetMapping
@@ -30,7 +29,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film creat(@Valid @RequestBody Film film) {
+    public Film create(@Valid @RequestBody Film film) {
         if (!films.containsKey(film.getId())) {
             String text = "Добавлен";
             validate(film, text);

@@ -2,12 +2,10 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
@@ -25,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User creat(@Valid @RequestBody User user) {
+    public User create(@Valid @RequestBody User user) {
         if (!users.containsKey(user.getId())) {
             String text = "Добавлен";
             validate(user, text);
@@ -51,8 +49,6 @@ public class UserController {
     void validate(User user, String text) {
         if (user.getName() == null || user.getName().isBlank())
             user.setName(user.getLogin());
-        if (user.getBirthday().isAfter(LocalDate.now()))
-            throw new ValidationException("Дата рождения не может быть позже текущей");
         log.debug("{} пользователь: {}, email: {}", text, user.getName(), user.getEmail());
 
     }
