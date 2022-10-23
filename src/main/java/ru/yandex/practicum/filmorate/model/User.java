@@ -23,6 +23,7 @@ public class User {
     private String login;
     @EqualsAndHashCode.Exclude
     private String name;
+    @NotNull
     @PastOrPresent
     @EqualsAndHashCode.Exclude
     private LocalDate birthday;
