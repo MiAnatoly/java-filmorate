@@ -2,59 +2,64 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
+@Component
 public class FilmController {
-    private final Map<Integer, Film> films = new HashMap<>();
-    private static final LocalDate LIMIT_DATA = LocalDate.of(1895, 12, 28);
-    private int idFilms;
+    private final InMemoryFilmStorage storage;
+    private final FilmService service;
+
+    @Autowired
+    public FilmController(InMemoryFilmStorage storage, FilmService service) {
+        this.storage = storage;
+        this.service = service;
+    }
 
     @GetMapping
     public List<Film> findAll() {
-        List<Film> filmsList= new ArrayList<>(films.values());
-        log.debug("Количество фильмов в текущий момент: {}", films.size());
-        return filmsList;
+        return storage.findAll();
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        if (!films.containsKey(film.getId())) {
-            String text = "Добавлен";
-            validate(film, text);
-            idFilms++;
-            film.setId(idFilms);
-            films.put(film.getId(), film);
-        } else
-            throw new RuntimeException("Фильм уже есть в базе");
-        return film;
+        return storage.create(film);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        if (films.containsKey(film.getId())) {
-            String text = "Обновлен";
-            validate(film, text);
-            films.put(film.getId(), film);
-        } else
-            throw new RuntimeException("Фильма нет в базе");
-        return film;
+        return storage.update(film);
     }
 
-    void validate(Film film, String text) {
-        if (film.getReleaseDate().isBefore(LIMIT_DATA))
-            throw new ValidationException("Дата релиза не может быть раньше " + LIMIT_DATA);
-        log.debug("{} фильм: {}", text, film.getName());
+    @GetMapping("/{id}")
+    public Film findUser(@PathVariable Integer id) {
+        return service.findFilm(id);
     }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void createLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        service.createLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        service.deleteLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> filmsPopular(@RequestParam (defaultValue = "10", required = false) Integer count) {
+        return service.filmsPopular(count);
+    }
+
+
 }

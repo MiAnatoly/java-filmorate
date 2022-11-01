@@ -1,8 +1,12 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import javax.validation.Valid;
 
@@ -11,45 +15,54 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/users")
+@Component
 public class UserController {
-    private final Map<Integer, User> users = new HashMap<>();
-    private int idUsers;
+    private final InMemoryUserStorage storage;
+    private final UserService service;
+
+    @Autowired
+    public UserController(InMemoryUserStorage storage, UserService service) {
+        this.storage = storage;
+        this.service = service;
+    }
 
     @GetMapping
     public List<User> findAll() {
-        List<User> usersList= new ArrayList<>(users.values());
-        log.debug("Количество пользователей в текущий момент: {}", users.size());
-        return usersList;
+        return storage.findAll();
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        if (!users.containsKey(user.getId())) {
-            String text = "Добавлен";
-            validate(user, text);
-            idUsers++;
-            user.setId(idUsers);
-            users.put(user.getId(), user);
-        } else
-            throw new RuntimeException("Пользователь есть в базе");
-        return user;
+        return storage.create(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        if (users.containsKey(user.getId())) {
-            String text = "Обновлен";
-            validate(user, text);
-            users.put(user.getId(), user);
-        } else
-            throw new RuntimeException("Нет пользователя");
-        return user;
+        return storage.update(user);
     }
 
-    void validate(User user, String text) {
-        if (user.getName() == null || user.getName().isBlank())
-            user.setName(user.getLogin());
-        log.debug("{} пользователь: {}, email: {}", text, user.getName(), user.getEmail());
+    @GetMapping("/{id}")
+    public User findUser(@PathVariable Integer id) {
+        return service.findUser(id);
+    }
 
+    @PutMapping("/{id}/friends/{friendId}")
+    public void createFriend(@PathVariable Integer friendId, @PathVariable Integer id) {
+        service.createFriend(friendId, id);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable Integer friendId, @PathVariable Integer id) {
+        service.deleteFriend(friendId, id);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> findFriends(@PathVariable Integer id) {
+        return service.findFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> findOtherFriends(@PathVariable Integer otherId, @PathVariable Integer id) {
+        return service.findOtherFriends(otherId, id);
     }
 }

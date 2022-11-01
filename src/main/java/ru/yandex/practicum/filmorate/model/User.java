@@ -10,10 +10,15 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 public class User {
     private int id;
+    @EqualsAndHashCode.Exclude
+    private final Set<Integer> friendsId = new HashSet<>();
     @NotNull
     @Email
     private String email;
@@ -27,5 +32,4 @@ public class User {
     @PastOrPresent
     @EqualsAndHashCode.Exclude
     private LocalDate birthday;
-
 }
