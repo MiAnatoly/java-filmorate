@@ -22,7 +22,7 @@ public class FilmService {
     }
 
     public Film findFilm(Integer id) {
-        if(!filmStorage.getFilms().containsKey(id))
+        if (!filmStorage.getFilms().containsKey(id))
             throw new NotObjectException("нет данного пользователя");
         return filmStorage.getFilms().get(id);
     }
@@ -33,8 +33,8 @@ public class FilmService {
         if (!userStorage.getUsers().containsKey(userId))
             throw new NotObjectException("нет данного пользователя");
         filmStorage.getFilms().get(id).getLikeUserId().add(userId);
-
     }
+    // пользователь добавляет лайк
 
     public void deleteLike(Integer id, Integer userId) {
         if (!filmStorage.getFilms().containsKey(id))
@@ -43,6 +43,7 @@ public class FilmService {
             throw new NotObjectException("нет данного пользователя");
         filmStorage.getFilms().get(id).getLikeUserId().remove(userId);
     }
+    // пользователь удаляет лайк
 
     public List<Film> filmsPopular(Integer count) {
         if (count <= 0)
@@ -52,10 +53,13 @@ public class FilmService {
                 .limit(count)
                 .collect(Collectors.toList());
     }
+    //возвращает список из первых count фильмов по количеству лайков.
+    // Если значение параметра count не задано, вернёт первые 10
 
     private int compare(Film f0, Film f1) {
         return f1.getLikeUserId().size() - f0.getLikeUserId().size();
     }
+    // определяет по количеству лайков
 }
 
 

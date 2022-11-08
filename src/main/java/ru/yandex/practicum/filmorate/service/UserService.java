@@ -20,10 +20,11 @@ public class UserService {
     }
 
     public User findUser(Integer id) {
-        if(!storage.getUsers().containsKey(id))
+        if (!storage.getUsers().containsKey(id))
             throw new NotObjectException("нет данного пользователя");
         return storage.getUsers().get(id);
     }
+    // показать пользователя
 
     public void createFriend(Integer friendId, Integer id) {
         if (!storage.getUsers().containsKey(friendId))
@@ -36,6 +37,7 @@ public class UserService {
         storage.getUsers().get(id).getFriendsId().add(friendId);
         storage.getUsers().get(friendId).getFriendsId().add(id);
     }
+    // добавить друга
 
     public void deleteFriend(Integer friendId, Integer id) {
         if (!storage.getUsers().containsKey(friendId))
@@ -45,6 +47,7 @@ public class UserService {
         storage.getUsers().get(id).getFriendsId().remove(friendId);
         storage.getUsers().get(friendId).getFriendsId().remove(id);
     }
+    // удалить друга
 
     public List<User> findFriends(Integer id) {
         if (!storage.getUsers().containsKey(id))
@@ -52,6 +55,7 @@ public class UserService {
         List<Integer> friendsId = new ArrayList<>(storage.getUsers().get(id).getFriendsId());
         return friendsUser(friendsId);
     }
+    // показать друзей
 
     public List<User> findOtherFriends(Integer otherId, Integer id) {
         if (!storage.getUsers().containsKey(otherId))
@@ -67,14 +71,14 @@ public class UserService {
         }
         return friendsUser(OtherFriendsId);
     }
+    // показать общих друзей
 
     private List<User> friendsUser(List<Integer> friendsId) {
         List<User> friendsUser = new ArrayList<>();
-        for (Integer friend: friendsId) {
+        for (Integer friend : friendsId) {
             friendsUser.add(storage.getUsers().get(friend));
         }
         return friendsUser;
     }
-
-
+    // воспомогательный метод для преобразования списка из ID пользователей в список из пользователей
 }

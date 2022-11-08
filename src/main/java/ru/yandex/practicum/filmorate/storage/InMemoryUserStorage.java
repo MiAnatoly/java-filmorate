@@ -24,6 +24,7 @@ public class InMemoryUserStorage implements UserStorage {
         log.debug("Количество пользователей в текущий момент: {}", users.size());
         return usersList;
     }
+    // показать всех пользователей
 
     @Override
     public User create(User user) {
@@ -37,6 +38,7 @@ public class InMemoryUserStorage implements UserStorage {
             throw new RuntimeException("Пользователь есть в базе");
         return user;
     }
+    // добавить позьзователя
 
     @Override
     public User update(User user) {
@@ -48,10 +50,12 @@ public class InMemoryUserStorage implements UserStorage {
             throw new NotObjectException("Нет пользователя");
         return user;
     }
+    // обнавит пользователя
 
     void validate(User user, String text) {
         if (user.getName() == null || user.getName().isBlank())
             user.setName(user.getLogin());
         log.debug("{} пользователь: {}, email: {}", text, user.getName(), user.getEmail());
     }
+    // воспомогательный метод проверяет наличие имени и в слючае отсутствия копируется из логина
 }

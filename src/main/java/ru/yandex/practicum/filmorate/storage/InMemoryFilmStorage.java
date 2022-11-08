@@ -30,6 +30,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.debug("Количество фильмов в текущий момент: {}", films.size());
         return filmsList;
     }
+    // показать все фильмы
 
     @Override
     public Film create(Film film) {
@@ -43,6 +44,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new RuntimeException("Фильм уже есть в базе");
         return film;
     }
+    // добавить фильм
 
     @Override
     public Film update(Film film) {
@@ -54,10 +56,13 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NotObjectException("Фильма нет в базе");
         return film;
     }
+    // обнавить фильм
 
     public void validate(Film film, String text) {
         if (film.getReleaseDate().isBefore(LIMIT_DATA))
             throw new ValidationException("Дата релиза не может быть раньше " + LIMIT_DATA);
         log.debug("{} фильм: {}", text, film.getName());
     }
+    // воспомогателльный метод проверяет дату релиза
+
 }

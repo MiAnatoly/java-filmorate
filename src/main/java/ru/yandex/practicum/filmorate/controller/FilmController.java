@@ -30,36 +30,43 @@ public class FilmController {
     public List<Film> findAll() {
         return storage.findAll();
     }
+    // показать все фильмы
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         return storage.create(film);
     }
+    // добавить фильм
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
         return storage.update(film);
     }
+    // обнавить фильм
 
     @GetMapping("/{id}")
     public Film findUser(@PathVariable Integer id) {
         return service.findFilm(id);
     }
+    // показать фильм по ID
 
     @PutMapping("/{id}/like/{userId}")
     public void createLike(@PathVariable Integer id, @PathVariable Integer userId) {
         service.createLike(id, userId);
     }
+    // добавить лайк
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
         service.deleteLike(id, userId);
     }
+    // удалить лайк
 
     @GetMapping("/popular")
     public List<Film> filmsPopular(@RequestParam (defaultValue = "10", required = false) Integer count) {
         return service.filmsPopular(count);
     }
+    // список из первых фильмов по лайкам
 
 
 }
