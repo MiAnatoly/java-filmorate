@@ -1,68 +1,46 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
-import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
-@Component
-@Getter
+@Repository
 public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Integer, Film> films = new HashMap<>();
 
-    private static final LocalDate LIMIT_DATA = LocalDate.of(1895, 12, 28);
-
-    int idFilms;
+    private int idFilms;
 
     @Override
-    public List<Film> findAll() {
-        List<Film> filmsList= new ArrayList<>(films.values());
-        log.debug("Количество фильмов в текущий момент: {}", films.size());
-        return filmsList;
+    public Map<Integer, Film> findAll() {
+        return films;
     }
     // показать все фильмы
 
     @Override
-    public Film create(Film film) {
+    public Optional<Film> create(Film film) {
         if (!(films.containsValue(film))) {
-            String text = "Добавлен";
-            validate(film, text);
             idFilms++;
             film.setId(idFilms);
             films.put(film.getId(), film);
         } else
             throw new RuntimeException("Фильм уже есть в базе");
-        return film;
+        return Optional.of(film);
     }
     // добавить фильм
 
     @Override
-    public Film update(Film film) {
+    public Optional<Film> update(Film film) {
         if (films.containsKey(film.getId())) {
-            String text = "Обновлен";
-            validate(film, text);
             films.put(film.getId(), film);
         } else
             throw new NotObjectException("Фильма нет в базе");
-        return film;
+        return Optional.of(film);
     }
     // обнавить фильм
-
-    public void validate(Film film, String text) {
-        if (film.getReleaseDate().isBefore(LIMIT_DATA))
-            throw new ValidationException("Дата релиза не может быть раньше " + LIMIT_DATA);
-        log.debug("{} фильм: {}", text, film.getName());
-    }
-    // воспомогателльный метод проверяет дату релиза
 
 }

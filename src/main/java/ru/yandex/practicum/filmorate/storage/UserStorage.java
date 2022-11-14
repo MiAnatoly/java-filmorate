@@ -3,15 +3,16 @@ package ru.yandex.practicum.filmorate.storage;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 public interface UserStorage {
 
-    List<User> findAll();
+    Map<Integer, User> findAll();
 
-    User create(User user);
+    Optional<User> create(User user);
 
-    User update(User user);
+    Optional<User> update(User user);
 
 }

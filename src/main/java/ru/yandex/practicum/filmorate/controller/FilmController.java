@@ -3,44 +3,48 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.service.FilmServiceInterface;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
-@Component
+@Validated
 public class FilmController {
-    private final InMemoryFilmStorage storage;
-    private final FilmService service;
+    private final FilmServiceInterface service;
+
+    protected static final LocalDate LIMIT_DATA = LocalDate.of(1895, 12, 28);
 
     @Autowired
-    public FilmController(InMemoryFilmStorage storage, FilmService service) {
-        this.storage = storage;
+    public FilmController(FilmServiceInterface service) {
         this.service = service;
     }
 
     @GetMapping
     public List<Film> findAll() {
-        return storage.findAll();
+        return service.findAll();
     }
     // показать все фильмы
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        return storage.create(film);
+        validate(film);
+        return service.create(film);
     }
     // добавить фильм
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        return storage.update(film);
+        validate(film);
+        return service.update(film);
     }
     // обнавить фильм
 
@@ -63,10 +67,15 @@ public class FilmController {
     // удалить лайк
 
     @GetMapping("/popular")
-    public List<Film> filmsPopular(@RequestParam (defaultValue = "10", required = false) Integer count) {
+    public List<Film> filmsPopular(@RequestParam(defaultValue = "10", required = false) @Positive Integer count) {
         return service.filmsPopular(count);
     }
     // список из первых фильмов по лайкам
 
+    void validate(Film film) {
+        if (film.getReleaseDate().isBefore(LIMIT_DATA))
+            throw new ValidationException("Дата релиза не может быть раньше " + LIMIT_DATA);
 
+    }
+    // воспомогателльный метод проверяет дату релиза
 }

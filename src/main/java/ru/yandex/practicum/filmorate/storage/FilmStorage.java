@@ -3,15 +3,16 @@ package ru.yandex.practicum.filmorate.storage;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 public interface FilmStorage {
 
-    List<Film> findAll();
+    Map<Integer, Film> findAll();
 
-    Film create(Film film);
+    Optional<Film> create(Film film);
 
-    Film update(Film film);
+    Optional<Film> update(Film film);
 
 }

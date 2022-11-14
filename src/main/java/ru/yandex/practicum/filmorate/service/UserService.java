@@ -4,81 +4,94 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class UserService {
-
-    private final InMemoryUserStorage storage;
+public class UserService implements UserServiceInterface {
+    private final UserStorage userStorage;
 
     @Autowired
-    public UserService(InMemoryUserStorage storage) {
-        this.storage = storage;
+    public UserService(UserStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
+    @Override
+    public List<User> findAll() {
+        return new ArrayList<>(userStorage.findAll().values());
+    }
+    // показать всех пользователей
+
+    @Override
+    public User create(User user) {
+        return userStorage.create(user).orElseThrow(() -> new NotObjectException("объект отсутствует"));
+    }
+    // добавить позьзователя
+
+    @Override
+    public User update(User user) {
+        return userStorage.update(user).orElseThrow(() -> new NotObjectException("объект отсутствует"));
+    }
+    // обнавит пользователя
+
+    @Override
     public User findUser(Integer id) {
-        if (!storage.getUsers().containsKey(id))
-            throw new NotObjectException("нет данного пользователя");
-        return storage.getUsers().get(id);
+        return findById(id, new NotObjectException("нет данного пользователя"));
     }
     // показать пользователя
 
+    @Override
     public void createFriend(Integer friendId, Integer id) {
-        if (!storage.getUsers().containsKey(friendId))
-            throw new NotObjectException("нет пользователя");
-        if (!storage.getUsers().containsKey(id))
-            throw new NotObjectException("вы не зарегистрированы");
-        if (storage.getUsers().get(id).getFriendsId().contains(friendId)
-                && storage.getUsers().get(friendId).getFriendsId().contains(id))
+        findById(friendId, new NotObjectException("нет пользователя"));
+        findById(id, new NotObjectException("вы не зарегистрированы"));
+        if (userStorage.findAll().get(id).getFriendsId().contains(friendId)
+                && userStorage.findAll().get(friendId).getFriendsId().contains(id))
             throw new RuntimeException("пользователь уже в друзьях");
-        storage.getUsers().get(id).getFriendsId().add(friendId);
-        storage.getUsers().get(friendId).getFriendsId().add(id);
+        userStorage.findAll().get(id).getFriendsId().add(friendId);
+        userStorage.findAll().get(friendId).getFriendsId().add(id);
     }
     // добавить друга
 
+    @Override
     public void deleteFriend(Integer friendId, Integer id) {
-        if (!storage.getUsers().containsKey(friendId))
-            throw new RuntimeException("нет пользователя");
-        if (!storage.getUsers().containsKey(id))
-            throw new RuntimeException("вы не зарегистрированы");
-        storage.getUsers().get(id).getFriendsId().remove(friendId);
-        storage.getUsers().get(friendId).getFriendsId().remove(id);
+        findById(friendId, new NotObjectException("нет пользователя"));
+        findById(id, new NotObjectException("вы не зарегистрированы"));
+        userStorage.findAll().get(id).getFriendsId().remove(friendId);
+        userStorage.findAll().get(friendId).getFriendsId().remove(id);
     }
     // удалить друга
 
+    @Override
     public List<User> findFriends(Integer id) {
-        if (!storage.getUsers().containsKey(id))
-            throw new NotObjectException("вы не зарегистрированы");
-        List<Integer> friendsId = new ArrayList<>(storage.getUsers().get(id).getFriendsId());
+        findById(id, new NotObjectException("вы не зарегистрированы"));
+        List<Integer> friendsId = new ArrayList<>(userStorage.findAll().get(id).getFriendsId());
         return friendsUser(friendsId);
     }
     // показать друзей
 
+    @Override
     public List<User> findOtherFriends(Integer otherId, Integer id) {
-        if (!storage.getUsers().containsKey(otherId))
-            throw new NotObjectException("нет пользователя");
-        if (!storage.getUsers().containsKey(id))
-            throw new NotObjectException("вы не зарегистрированы");
-        List<Integer> OtherFriendsId = new ArrayList<>();
-        List<Integer> myFriendsId = new ArrayList<>(storage.getUsers().get(id).getFriendsId());
-        List<Integer> friendsId = new ArrayList<>(storage.getUsers().get(otherId).getFriendsId());
-        for (Integer friendId : myFriendsId) {
-            if (friendsId.contains(friendId))
-                OtherFriendsId.add(friendId);
-        }
+        findById(otherId, new NotObjectException("нет пользователя"));
+        findById(id, new NotObjectException("вы не зарегистрированы"));
+        List<Integer> myFriendsId = new ArrayList<>(userStorage.findAll().get(id).getFriendsId());
+        List<Integer> friendsId = new ArrayList<>(userStorage.findAll().get(otherId).getFriendsId());
+        List<Integer> OtherFriendsId = myFriendsId.stream().filter(friendsId::contains)
+                .collect(Collectors.toList());
         return friendsUser(OtherFriendsId);
     }
     // показать общих друзей
 
     private List<User> friendsUser(List<Integer> friendsId) {
-        List<User> friendsUser = new ArrayList<>();
-        for (Integer friend : friendsId) {
-            friendsUser.add(storage.getUsers().get(friend));
-        }
-        return friendsUser;
+        return friendsId.stream().map(userStorage.findAll()::get).collect(Collectors.toList());
     }
     // воспомогательный метод для преобразования списка из ID пользователей в список из пользователей
+
+    private User findById(Integer id, RuntimeException exception) {
+        return Optional.ofNullable(userStorage.findAll().get(id)).orElseThrow(() -> exception);
+    }
+    //поиск пользователя по id
 }

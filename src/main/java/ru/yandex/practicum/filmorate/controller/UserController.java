@@ -2,11 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.service.UserServiceInterface;
 
 import javax.validation.Valid;
 
@@ -15,32 +13,32 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/users")
-@Component
 public class UserController {
-    private final InMemoryUserStorage storage;
-    private final UserService service;
+
+    private final UserServiceInterface service;
 
     @Autowired
-    public UserController(InMemoryUserStorage storage, UserService service) {
-        this.storage = storage;
+    public UserController(UserServiceInterface service) {
         this.service = service;
     }
 
     @GetMapping
     public List<User> findAll() {
-        return storage.findAll();
+        return service.findAll();
     }
     // показать всех пользователей
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        return storage.create(user);
+        validate(user);
+        return service.create(user);
     }
     // добавить пользователя
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        return storage.update(user);
+        validate(user);
+        return service.update(user);
     }
     // обнавить пользователя
 
@@ -49,7 +47,6 @@ public class UserController {
         return service.findUser(id);
     }
     // показать пользователя по ID
-
 
     @PutMapping("/{id}/friends/{friendId}")
     public void createFriend(@PathVariable Integer friendId, @PathVariable Integer id) {
@@ -74,4 +71,11 @@ public class UserController {
         return service.findOtherFriends(otherId, id);
     }
     // найти общих друзей с пользователем
+
+    void validate(User user) {
+        if (user.getName() == null || user.getName().isBlank())
+            user.setName(user.getLogin());
+
+    }
+    // воспомогательный метод проверяет наличие имени и в слючае отсутствия копируется из логина
 }
