@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserServiceInterface;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 
@@ -15,10 +15,10 @@ import java.util.*;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserServiceInterface service;
+    private final UserService service;
 
     @Autowired
-    public UserController(UserServiceInterface service) {
+    public UserController(UserService service) {
         this.service = service;
     }
 
@@ -43,8 +43,8 @@ public class UserController {
     // обнавить пользователя
 
     @GetMapping("/{id}")
-    public User findUser(@PathVariable Integer id) {
-        return service.findUser(id);
+    public User findById(@PathVariable Integer id) {
+        return service.findById(id);
     }
     // показать пользователя по ID
 

@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmServiceInterface;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -19,12 +19,12 @@ import java.util.List;
 @RequestMapping("/films")
 @Validated
 public class FilmController {
-    private final FilmServiceInterface service;
+    private final FilmService service;
 
     protected static final LocalDate LIMIT_DATA = LocalDate.of(1895, 12, 28);
 
     @Autowired
-    public FilmController(FilmServiceInterface service) {
+    public FilmController(FilmService service) {
         this.service = service;
     }
 
@@ -49,8 +49,8 @@ public class FilmController {
     // обнавить фильм
 
     @GetMapping("/{id}")
-    public Film findUser(@PathVariable Integer id) {
-        return service.findFilm(id);
+    public Film findById(@PathVariable Integer id) {
+        return service.findById(id);
     }
     // показать фильм по ID
 

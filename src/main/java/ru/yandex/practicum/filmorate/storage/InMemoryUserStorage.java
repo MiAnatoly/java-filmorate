@@ -10,34 +10,31 @@ import java.util.*;
 @Slf4j
 @Repository
 public class InMemoryUserStorage implements UserStorage {
-    protected final Map<Integer, User> users = new HashMap<>();
-    protected int idUsers;
+    private final Map<Integer, User> users = new HashMap<>();
+    private int idUsers;
 
     @Override
-    public Map<Integer, User> findAll() {
-        return users;
+    public Optional<List<User>> findAll() {
+        return Optional.of(List.copyOf(users.values()));
     }
     // показать всех пользователей
 
     @Override
-    public Optional<User> create(User user) {
-        if (!users.containsKey(user.getId())) {
+    public User create(User user) {
             idUsers++;
             user.setId(idUsers);
             users.put(user.getId(), user);
-        } else
-            throw new RuntimeException("Пользователь есть в базе");
-        return Optional.of(user);
+        return user;
     }
     // добавить позьзователя
 
     @Override
-    public Optional<User> update(User user) {
+    public User update(User user) {
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
         } else
             throw new NotObjectException("Нет пользователя");
-        return Optional.of(user);
+        return user;
     }
     // обнавит пользователя
 

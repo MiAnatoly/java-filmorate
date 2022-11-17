@@ -16,30 +16,27 @@ public class InMemoryFilmStorage implements FilmStorage {
     private int idFilms;
 
     @Override
-    public Map<Integer, Film> findAll() {
-        return films;
+    public Optional<List<Film>> findAll() {
+        return Optional.of(List.copyOf(films.values()));
     }
     // показать все фильмы
 
     @Override
-    public Optional<Film> create(Film film) {
-        if (!(films.containsValue(film))) {
+    public Film create(Film film) {
             idFilms++;
             film.setId(idFilms);
             films.put(film.getId(), film);
-        } else
-            throw new RuntimeException("Фильм уже есть в базе");
-        return Optional.of(film);
+        return film;
     }
     // добавить фильм
 
     @Override
-    public Optional<Film> update(Film film) {
+    public Film update(Film film) {
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
         } else
             throw new NotObjectException("Фильма нет в базе");
-        return Optional.of(film);
+        return film;
     }
     // обнавить фильм
 
