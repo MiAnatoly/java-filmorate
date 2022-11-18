@@ -24,7 +24,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> findAll() {
-        return filmStorage.findAll().orElseThrow(() -> new NotObjectException("нет объекта"));
+        return filmStorage.findAll();
     }
     // показать все фильмы
 
@@ -42,18 +42,15 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Film findById(Integer id) {
-        return findAll().stream()
-                .filter(x -> x.getId() == id )
-                .findAny()
-                .orElseThrow(() -> new NotObjectException("нет данного фильма"));
+        return filmStorage.findById(id).orElseThrow(() -> new NotObjectException("нет фильма"));
     }
+    // поиск фильма по id
 
     @Override
     public void createLike(Integer id, Integer userId) {
         userService.findById(userId);
         Film film = findById(id);
         film.getLikeUserId().add(userId);
-        update(film);
     }
     // пользователь добавляет лайк
 
@@ -62,7 +59,6 @@ public class FilmServiceImpl implements FilmService {
         userService.findById(userId);
         Film film = findById(id);
         film.getLikeUserId().remove(userId);
-        update(film);
     }
     // пользователь удаляет лайк
 

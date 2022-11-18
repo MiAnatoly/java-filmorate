@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
+import ru.yandex.practicum.filmorate.Exception.RepeatObjectException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAll() {
-        return userStorage.findAll().orElseThrow(() -> new NotObjectException("нет объекта"));
+        return userStorage.findAll();
     }
     // показать всех пользователей
 
@@ -39,10 +40,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(Integer id) {
-        return findAll().stream()
-                    .filter(x -> x.getId() == id)
-                    .findAny()
-                    .orElseThrow(() -> new NotObjectException("нет данного пользователя"));
+        return userStorage.findById(id).orElseThrow(() -> new NotObjectException("нет пользователя"));
     }
     // показать пользователя
 
@@ -52,11 +50,9 @@ public class UserServiceImpl implements UserService {
         User my = findById(id);
         if (my.getFriendsId().contains(friendId)
                 && friend.getFriendsId().contains(id))
-            throw new RuntimeException("пользователь уже в друзьях");
+            throw new RepeatObjectException("пользователь уже в друзьях");
         my.getFriendsId().add(friendId);
         friend.getFriendsId().add(id);
-        update(friend);
-        update(my);
     }
     // добавить друга
 
@@ -69,8 +65,6 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("пользователя нет в друзьях");
         my.getFriendsId().remove(friendId);
         friend.getFriendsId().remove(id);
-        update(friend);
-        update(my);
 
     }
     // удалить друга

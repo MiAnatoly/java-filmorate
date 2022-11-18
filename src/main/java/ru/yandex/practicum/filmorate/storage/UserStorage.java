@@ -9,10 +9,12 @@ import java.util.Optional;
 @Component
 public interface UserStorage {
 
-    Optional<List<User>> findAll();
+    List<User> findAll();
 
     User create(User user);
 
     User update(User user);
+
+    Optional<User> findById(Integer id);
 
 }

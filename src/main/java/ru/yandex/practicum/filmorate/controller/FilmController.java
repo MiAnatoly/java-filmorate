@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.Exception.ValidationException;
@@ -18,15 +18,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 @Validated
+@RequiredArgsConstructor
 public class FilmController {
     private final FilmService service;
 
-    protected static final LocalDate LIMIT_DATA = LocalDate.of(1895, 12, 28);
-
-    @Autowired
-    public FilmController(FilmService service) {
-        this.service = service;
-    }
+    private static final LocalDate LIMIT_DATA = LocalDate.of(1895, 12, 28);
 
     @GetMapping
     public List<Film> findAll() {

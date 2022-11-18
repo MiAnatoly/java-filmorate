@@ -9,10 +9,11 @@ import java.util.Optional;
 @Component
 public interface FilmStorage {
 
-    Optional<List<Film>>  findAll();
+    List<Film> findAll();
 
     Film create(Film film);
 
     Film update(Film film);
 
+    Optional<Film> findById(Integer id);
 }

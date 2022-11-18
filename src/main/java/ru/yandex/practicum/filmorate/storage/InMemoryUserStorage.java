@@ -14,8 +14,8 @@ public class InMemoryUserStorage implements UserStorage {
     private int idUsers;
 
     @Override
-    public Optional<List<User>> findAll() {
-        return Optional.of(List.copyOf(users.values()));
+    public List<User> findAll() {
+        return List.copyOf(users.values());
     }
     // показать всех пользователей
 
@@ -38,4 +38,9 @@ public class InMemoryUserStorage implements UserStorage {
     }
     // обнавит пользователя
 
+    @Override
+    public Optional<User> findById(Integer id) {
+        return Optional.ofNullable(users.get(id));
+    }
+    // показать пользователя
 }

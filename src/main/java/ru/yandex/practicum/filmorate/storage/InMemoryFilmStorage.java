@@ -16,8 +16,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     private int idFilms;
 
     @Override
-    public Optional<List<Film>> findAll() {
-        return Optional.of(List.copyOf(films.values()));
+    public List<Film> findAll() {
+        return List.copyOf(films.values());
     }
     // показать все фильмы
 
@@ -40,4 +40,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
     // обнавить фильм
 
+    @Override
+    public Optional<Film> findById(Integer id) {
+        return Optional.ofNullable(films.get(id));
+    }
+    // поиск фильма по id
 }
