@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 
@@ -11,45 +13,65 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
-    private final Map<Integer, User> users = new HashMap<>();
-    private int idUsers;
+
+    private final UserService service;
 
     @GetMapping
     public List<User> findAll() {
-        List<User> usersList= new ArrayList<>(users.values());
-        log.debug("Количество пользователей в текущий момент: {}", users.size());
-        return usersList;
+        return service.findAll();
     }
+    // показать всех пользователей
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        if (!users.containsKey(user.getId())) {
-            String text = "Добавлен";
-            validate(user, text);
-            idUsers++;
-            user.setId(idUsers);
-            users.put(user.getId(), user);
-        } else
-            throw new RuntimeException("Пользователь есть в базе");
-        return user;
+        validate(user);
+        return service.create(user);
     }
+    // добавить пользователя
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        if (users.containsKey(user.getId())) {
-            String text = "Обновлен";
-            validate(user, text);
-            users.put(user.getId(), user);
-        } else
-            throw new RuntimeException("Нет пользователя");
-        return user;
+        validate(user);
+        return service.update(user);
     }
+    // обнавить пользователя
 
-    void validate(User user, String text) {
+    @GetMapping("/{id}")
+    public User findById(@PathVariable Integer id) {
+        return service.findById(id);
+    }
+    // показать пользователя по ID
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void createFriend(@PathVariable Integer friendId, @PathVariable Integer id) {
+        service.createFriend(friendId, id);
+    }
+    // добавить друга
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable Integer friendId, @PathVariable Integer id) {
+        service.deleteFriend(friendId, id);
+    }
+    // удалить друга
+
+    @GetMapping("/{id}/friends")
+    public List<User> findFriends(@PathVariable Integer id) {
+        return service.findFriends(id);
+    }
+    // показать друзей пользователя
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> findOtherFriends(@PathVariable Integer otherId, @PathVariable Integer id) {
+        return service.findOtherFriends(otherId, id);
+    }
+    // найти общих друзей с пользователем
+
+    void validate(User user) {
         if (user.getName() == null || user.getName().isBlank())
             user.setName(user.getLogin());
-        log.debug("{} пользователь: {}, email: {}", text, user.getName(), user.getEmail());
 
     }
+    // воспомогательный метод проверяет наличие имени и в слючае отсутствия копируется из логина
 }
