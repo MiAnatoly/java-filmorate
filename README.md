@@ -1,7 +1,7 @@
 # java-filmorate
 ER диаграмма
 
-![QuickDBD-Free Diagram](https://user-images.githubusercontent.com/102370323/203843736-0fee2b5c-ac10-48ab-bcc1-e5936fd720b6.png)
+![QuickDBD-Free Diagram](https://user-images.githubusercontent.com/102370323/203858378-e024ac8f-89cf-496e-91a2-617248bc0a06.png)
 
 Программа для работы с информацией о фильмах и её пользователей
 
@@ -10,6 +10,7 @@ ER диаграмма
 # Пользователь(User):
 
 ### показать пользователя
+
     SELECT *
     FROM users
     WHERE user_id = {id}
@@ -43,13 +44,13 @@ ER диаграмма
 
 	SELECT *
     	FROM films AS f
-    	LEFT OUTER JOIN rating_MPA AS r ON f.raiting_id = r.raiting_id
+    	LEFT OUTER JOIN rating_MPA AS r ON f.rating_id = r.rating_id
     	WHERE f.films_id = {id}
 
 ### список из первых count фильмов по количеству лайков.
   если значение параметра count не задано, вернёт первые 10
 
-    SELECT f.name,
+    SELECT f.film_id,
     	   COUNT(lf.user_id) AS count_like
     FROM films AS f
     LEFT OUTER JOIN like_film AS lf ON f.film_id = lf.film_id
