@@ -49,12 +49,12 @@ ER диаграмма
   если значение параметра count не задано, вернёт первые 10
 
     SELECT f.name,
-    		COUNT(lf.users_id) AS count_like
+    	   COUNT(lf.user_id) AS count_like
     FROM films AS f
-    LEFT OUTER JOIN like_film AS lf ON f.films_id = lf.films_id
+    LEFT OUTER JOIN like_film AS lf ON f.film_id = lf.film_id
     GROUP BY f.name
     ORDER BY count_like DESC
-    	LIMIT 5
+    	LIMIT {size}
 
 ### показать категории фильма
 
