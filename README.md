@@ -11,7 +11,9 @@ ER диаграмма
 
 - показать пользователя
 
-![показать пользователя](https://user-images.githubusercontent.com/102370323/203748101-b8fa51e0-22c7-4791-a995-79aa6bd27400.jpg)
+## SELECT *
+FROM users
+WHERE user_id = 1
 
 - показать друзей
 
