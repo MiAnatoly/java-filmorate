@@ -10,9 +10,9 @@ ER диаграмма
 # Пользователь(User):
 
 ### показать пользователя
-`SELECT *
-FROM users
-WHERE user_id = 1`
+    `SELECT *
+    FROM users
+    WHERE user_id = 1`
 
 ### показать друзей
 
