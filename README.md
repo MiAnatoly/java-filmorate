@@ -20,7 +20,8 @@ ER диаграмма
     FROM users AS u
     WHERE u.user_id IN (SELECT friend_id
                   FROM friendship AS f
-                  WHERE f.user_id = {id})
+                  WHERE f.user_id = {id}
+		  AND f.status)
 
 ### показать общих друзей
 
