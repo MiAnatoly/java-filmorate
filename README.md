@@ -14,7 +14,7 @@ SELECT *
 FROM users
 WHERE user_id = 1
 
-- показать друзей
+### показать друзей
 
 ![показать друзей1](https://user-images.githubusercontent.com/102370323/203748351-f70b419c-9910-4986-bb16-40c609429daa.jpg)
 
