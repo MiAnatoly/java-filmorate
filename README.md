@@ -11,7 +11,7 @@ ER диаграмма
 
 - показать пользователя
 
-## SELECT *
+SELECT *
 FROM users
 WHERE user_id = 1
 
