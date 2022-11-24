@@ -24,7 +24,17 @@ ER диаграмма
 
 ### показать общих друзей
 
-![показать общих друзей](https://user-images.githubusercontent.com/102370323/203748465-3cf5ba77-38b7-455a-8446-fdfb21c7fd0d.jpg)
+    SELECT *
+        FROM users AS u
+        WHERE u.user_id IN (SELECT f.*
+    FROM (SELECT friend_id 
+        FROM friendship AS f1
+	    WHERE f1.users_id = 1
+        AND f1.status) AS f
+	    INNER JOIN (SELECT friend_id 
+                    FROM friendship AS f2
+	                WHERE f2.users_id = 2
+                    AND f2.status) AS fa ON f.friend_id = fa.friend_id)
 
 # Фильм(film):
 
