@@ -1,7 +1,7 @@
 # java-filmorate
 ER диаграмма
 
-![QuickDBD-Free Diagram](https://user-images.githubusercontent.com/102370323/203766852-64fde6cb-acf7-43d9-b4c4-0e9a0225b0b4.png)
+![QuickDBD-Free Diagram](https://user-images.githubusercontent.com/102370323/203843736-0fee2b5c-ac10-48ab-bcc1-e5936fd720b6.png)
 
 Программа для работы с информацией о фильмах и её пользователей
 
@@ -58,4 +58,7 @@ ER диаграмма
 
 ### показать категории фильма
 
-![показать категории фильма](https://user-images.githubusercontent.com/102370323/203748907-288ae8f8-0131-40bf-910b-4cd3b622021c.jpg)
+   SELECT c.name
+   FROM film_category AS fc
+   left JOIN category AS c ON fc.category_id = c.category_id
+	WHERE fc.film_id = {id}
