@@ -58,7 +58,7 @@ ER диаграмма
 
 ### показать категории фильма
 
-   SELECT c.name
-   FROM film_category AS fc
-   left JOIN category AS c ON fc.category_id = c.category_id
+   	SELECT c.name
+   	FROM film_category AS fc
+   	LEFT JOIN category AS c ON fc.category_id = c.category_id
 	WHERE fc.film_id = {id}
