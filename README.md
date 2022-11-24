@@ -16,7 +16,11 @@ ER диаграмма
 
 ### показать друзей
 
-![показать друзей1](https://user-images.githubusercontent.com/102370323/203748351-f70b419c-9910-4986-bb16-40c609429daa.jpg)
+    SELECT *
+    FROM users AS u
+    WHERE u.user_id IN (SELECT friend_id
+                  FROM friendship AS f
+                  WHERE f.user_id = 1)
 
 ### показать общих друзей
 
