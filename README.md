@@ -1,7 +1,7 @@
 # java-filmorate
 ER диаграмма
 
-![QuickDBD-Free Diagram](https://user-images.githubusercontent.com/102370323/203757971-3c76d4f6-bae4-452f-9ee6-c4133ff7c157.png)
+![QuickDBD-Free Diagram](https://user-images.githubusercontent.com/102370323/203766852-64fde6cb-acf7-43d9-b4c4-0e9a0225b0b4.png)
 
 Программа для работы с информацией о фильмах и её пользователей
 
@@ -25,7 +25,7 @@ ER диаграмма
 
 - показать информацию о фильме
 
-![показать фильм](https://user-images.githubusercontent.com/102370323/203758024-f81253b7-77cf-4702-9687-4cf9c77b4e02.jpg)
+![показать фильм](https://user-images.githubusercontent.com/102370323/203766886-5f9215b2-a5d0-4956-b452-e31693d16d7f.jpg)
 
 - список из первых count фильмов по количеству лайков.
   если значение параметра count не задано, вернёт первые 10
