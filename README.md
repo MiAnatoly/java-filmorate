@@ -12,7 +12,7 @@ ER диаграмма
 ### показать пользователя
     SELECT *
     FROM users
-    WHERE user_id = 1
+    WHERE user_id = {id}
 
 ### показать друзей
 
@@ -20,7 +20,7 @@ ER диаграмма
     FROM users AS u
     WHERE u.user_id IN (SELECT friend_id
                   FROM friendship AS f
-                  WHERE f.user_id = 1)
+                  WHERE f.user_id = {id})
 
 ### показать общих друзей
 
@@ -28,19 +28,22 @@ ER диаграмма
         FROM users AS u
         WHERE u.user_id IN (SELECT f.*
     FROM (SELECT friend_id 
-        FROM friendship AS f1
-	    WHERE f1.users_id = 1
-        AND f1.status) AS f
+        FROM friendship AS f
+	    WHERE f.users_id = {id}
+        AND f.status) AS f
 	    INNER JOIN (SELECT friend_id 
-                    FROM friendship AS f2
-	                WHERE f2.users_id = 2
-                    AND f2.status) AS fa ON f.friend_id = fa.friend_id)
+                    FROM friendship AS f
+	                WHERE f.users_id = {id}
+                    AND f.status) AS fa ON f.friend_id = fa.friend_id)
 
 # Фильм(film):
 
 ### показать информацию о фильме
 
-![показать фильм](https://user-images.githubusercontent.com/102370323/203766886-5f9215b2-a5d0-4956-b452-e31693d16d7f.jpg)
+	SELECT *
+    	FROM films AS f
+    	LEFT OUTER JOIN rating_MPA AS r ON f.raiting_id = r.raiting_id
+    	WHERE f.films_id = {id}
 
 ### список из первых count фильмов по количеству лайков.
   если значение параметра count не задано, вернёт первые 10
