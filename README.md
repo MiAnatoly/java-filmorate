@@ -48,7 +48,13 @@ ER диаграмма
 ### список из первых count фильмов по количеству лайков.
   если значение параметра count не задано, вернёт первые 10
 
-![показать фильмы по количеству лайков](https://user-images.githubusercontent.com/102370323/203758057-dfe988c8-bedf-49a0-b6ed-ea7082974d1e.jpg)
+    SELECT f.name,
+    		COUNT(lf.users_id) AS count_like
+    FROM films AS f
+    LEFT OUTER JOIN like_film AS lf ON f.films_id = lf.films_id
+    GROUP BY f.name
+    ORDER BY count_like DESC
+    	LIMIT 5
 
 ### показать категории фильма
 
