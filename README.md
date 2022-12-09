@@ -12,13 +12,13 @@ ER диаграмма
 ### показать пользователя
 
     SELECT *
-    FROM users
+    FROM USERS_FILMS
     WHERE user_id = {id}
 
 ### показать друзей
 
     SELECT *
-    FROM users AS u
+    FROM USERS_FILMS AS u
     WHERE u.user_id IN (SELECT friend_id
                   FROM friendship AS f
                   WHERE f.user_id = {id}
@@ -27,16 +27,15 @@ ER диаграмма
 ### показать общих друзей
 
     SELECT *
-        FROM users AS u
+        FROM USERS_FILMS AS u
         WHERE u.user_id IN (SELECT f.*
     FROM (SELECT friend_id 
         FROM friendship AS f
-	    WHERE f.users_id = {id}
-        AND f.status) AS f
+	    WHERE f.users_id = {id}) AS f
 	    INNER JOIN (SELECT friend_id 
                     FROM friendship AS f
-	                WHERE f.users_id = {id}
-                    AND f.status) AS fa ON f.friend_id = fa.friend_id)
+	                WHERE f.users_id = {id}) AS fa 
+                    ON f.friend_id = fa.friend_id)
 
 # Фильм(film):
 
@@ -44,7 +43,6 @@ ER диаграмма
 
 	SELECT *
     	FROM films AS f
-    	LEFT OUTER JOIN rating_MPA AS r ON f.rating_id = r.rating_id
     	WHERE f.films_id = {id}
 
 ### список из первых count фильмов по количеству лайков.
@@ -60,7 +58,7 @@ ER диаграмма
 
 ### показать категории фильма
 
-   	SELECT c.name
+   	SELECT Fc.CATEGORY_ID
    	FROM film_category AS fc
-   	LEFT JOIN category AS c ON fc.category_id = c.category_id
 	WHERE fc.film_id = {id}
+    GROUP BY FILM_ID, CATEGORY_ID

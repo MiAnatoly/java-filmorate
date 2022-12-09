@@ -9,16 +9,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 public class Film {
     @EqualsAndHashCode.Exclude
     private int id;
-    @EqualsAndHashCode.Exclude
-    private final Set<Integer> LikeUserId = new HashSet<>();
     @NotBlank
     private String name;
     @Size(max = 200)
@@ -30,4 +27,7 @@ public class Film {
     @Positive
     @EqualsAndHashCode.Exclude
     private int duration;
+    private RatingMpa mpa;
+    private List<Category> genres;
+
 }
