@@ -1,4 +1,4 @@
-merge INTO CATEGORY (CATEGORY_ID, NAME) VALUES
+merge INTO CATEGORY (CATEGORY_ID, CATEGORY) VALUES
 (1,  'Комедия'),
 (2,  'Драма'),
 (3,  'Мультфильм'),

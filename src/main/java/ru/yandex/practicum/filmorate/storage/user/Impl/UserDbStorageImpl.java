@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.user.Impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -20,7 +21,6 @@ import java.util.Optional;
 
 @Slf4j
 @Repository
-
 public class UserDbStorageImpl implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
@@ -54,7 +54,7 @@ public class UserDbStorageImpl implements UserStorage {
     } // Добавить пользователя
 
     @Override
-    public User update(User user) {
+    public Optional<User> update(User user) {
         String sqlQuery = "UPDATE USERS_FILMS set NAME = ?, EMAIL = ?, LOGIN = ?, BIRTHDAY = ? WHERE USER_ID = ?";
         jdbcTemplate.update(sqlQuery,
                 user.getName(),
@@ -62,7 +62,12 @@ public class UserDbStorageImpl implements UserStorage {
                 user.getLogin(),
                 user.getBirthday(),
                 user.getId());
-        return user;
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT USER_ID FROM USERS_FILMS " +
+                "WHERE USER_ID = ? ", user.getId());
+        if (userRows.next()) {
+            return Optional.of(user);
+        } else log.info("Пользователь с идентификатором {} не найден.", user.getId());
+        return Optional.empty();
     } // Обнавить пользователя
 
     @Override
@@ -73,47 +78,6 @@ public class UserDbStorageImpl implements UserStorage {
         } else log.info("Фильм с идентификатором {} не найден.", id);
         return Optional.empty();
     } // найти пользователя по id
-
-    @Override
-    public void createFriend(Integer friendId, Integer id) {
-        String sqlQuery = "insert into FRIENDSHIP (USER_ID, FRIEND_ID, STATUS) " +
-                "values (?, ?, ?)";
-        boolean friendship = false;
-        if(findFriends(friendId).contains(findById(id).orElse(null))) {
-            friendship = true;
-            String sql = "UPDATE FRIENDSHIP set STATUS = true WHERE USER_ID = ?";
-            jdbcTemplate.update(sql, friendId);
-        } // код для подтверждения дружбы
-        jdbcTemplate.update(sqlQuery, id, friendId, friendship);
-    } // Добавить друга
-
-    @Override
-    public void deleteFriend(Integer friendId, Integer id) {
-        String sqlQuery = "DELETE FROM FRIENDSHIP WHERE  USER_ID = ? AND FRIEND_ID = ?";
-        if(findFriends(friendId).contains(findById(id).orElse(null))) {
-            String sql = "UPDATE FRIENDSHIP set STATUS = false WHERE USER_ID = ?";
-            jdbcTemplate.update(sql, friendId);
-        } // код для отклонения дружбы
-        jdbcTemplate.update(sqlQuery, id, friendId);
-    } // удалить друга
-
-    @Override
-    public List<User> findFriends(Integer id) {
-        String sql = "SELECT * FROM USERS_FILMS AS u " +
-                "WHERE u.USER_ID IN (SELECT f.FRIEND_ID FROM FRIENDSHIP AS f WHERE f.USER_ID = " + id + ")";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
-    } // показать друзей пользователя
-
-    @Override
-    public List<User> findOtherFriends(Integer otherId, Integer id) {
-        String sql =  "SELECT * FROM USERS_FILMS AS u WHERE u.user_id IN " +
-                    "(SELECT f.* FROM (SELECT friend_id FROM friendship AS f " +
-                    "WHERE f.user_id = " + id + ") AS f " +
-                    "INNER JOIN (SELECT friend_id " +
-                    "FROM friendship AS f " +
-                    "WHERE f.user_id = " + otherId + ") AS fa ON f.friend_id = fa.friend_id)";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
-    } // общие друзья
 
     private User makeUser(ResultSet rs) throws SQLException {
         int id = rs.getInt("USER_ID");

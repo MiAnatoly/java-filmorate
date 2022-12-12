@@ -23,7 +23,7 @@ create table IF NOT EXISTS FILMS
 
 create table IF NOT EXISTS CATEGORY
 (
-    NAME        CHARACTER VARYING(45) not null,
+    CATEGORY        CHARACTER VARYING(45) not null,
     CATEGORY_ID INTEGER               not null,
     constraint "CATEGORY_pk"
         primary key (CATEGORY_ID)
@@ -36,7 +36,9 @@ create table IF NOT EXISTS FILM_CATEGORY
     constraint "FILM_CATEGORY_CATEGORY_null_fk"
         foreign key (CATEGORY_ID) references CATEGORY,
     constraint "FILM_CATEGORY_FILMS_null_fk"
-        foreign key (FILM_ID) references FILMS
+        foreign key (FILM_ID) references FILMS,
+    constraint "FILM_CATEGORY_pk"
+        primary key (FILM_ID, CATEGORY_ID)
 );
 
 create table IF NOT EXISTS USERS_FILMS
@@ -60,7 +62,7 @@ create table IF NOT EXISTS FRIENDSHIP
     constraint "FRIENDSHIP_USERS_FILMS_null_fk"
         foreign key (USER_ID) references USERS_FILMS,
     constraint "FRIENDSHIP_USERS_FILMS_fk"
-        UNIQUE (USER_ID, FRIEND_ID)
+        primary key (USER_ID, FRIEND_ID)
 );
 
 create table IF NOT EXISTS LIKE_FILM
@@ -72,5 +74,5 @@ create table IF NOT EXISTS LIKE_FILM
     constraint "LIKE_FILM_USERS_FILMS_null_fk"
         foreign key (USER_ID) references USERS_FILMS,
     constraint "LIKE_FILM_null_fk"
-        UNIQUE (USER_ID, FILM_ID)
+        primary key (USER_ID, FILM_ID)
 );

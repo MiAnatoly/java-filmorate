@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
@@ -12,10 +13,12 @@ import java.util.List;
 public class UserServiceImpl implements ru.yandex.practicum.filmorate.service.UserService {
 
     private final UserStorage userStorage;
+    private final FriendshipStorage friendshipStorage;
 
     @Autowired
-    public UserServiceImpl(UserStorage userStorage) {
+    public UserServiceImpl(UserStorage userStorage, FriendshipStorage friendshipStorage) {
         this.userStorage = userStorage;
+        this.friendshipStorage = friendshipStorage;
     }
 
     @Override
@@ -26,15 +29,13 @@ public class UserServiceImpl implements ru.yandex.practicum.filmorate.service.Us
 
     @Override
     public User create(User user) {
-        int id = userStorage.create(user).getId();
-        return findById(id);
+        return userStorage.create(user);
     }
     // добавить позьзователя
 
     @Override
     public User update(User user) {
-        int id = userStorage.update(user).getId();
-        return findById(id);
+        return userStorage.update(user).orElseThrow(() -> new NotObjectException("нет пользователя"));
     }
     // обнавит пользователя
 
@@ -46,25 +47,25 @@ public class UserServiceImpl implements ru.yandex.practicum.filmorate.service.Us
 
     @Override
     public void createFriend(Integer friendId, Integer id) {
-        userStorage.createFriend(friendId, id);
+        friendshipStorage.createFriend(friendId, id);
     }
     // добавить друга
 
     @Override
     public void deleteFriend(Integer friendId, Integer id) {
-        userStorage.deleteFriend(friendId, id);
+        friendshipStorage.deleteFriend(friendId, id);
     }
     // удалить друга
 
     @Override
     public List<User> findFriends(Integer id) {
-        return userStorage.findFriends(id);
+        return friendshipStorage.findFriends(id);
     }
     // показать друзей
 
     @Override
     public List<User> findOtherFriends(Integer otherId, Integer id) {
-        return userStorage.findOtherFriends(otherId, id);
+        return friendshipStorage.findOtherFriends(otherId, id);
     }
     // показать общих друзей
 }

@@ -9,8 +9,12 @@ import ru.yandex.practicum.filmorate.model.Category;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.film.CategoryStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.LikeFilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.user.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,6 +32,10 @@ class FilmorateApplicationTests {
 
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final CategoryStorage categoryStorage;
+    private final MpaStorage mpaStorage;
+    private final FriendshipStorage friendshipStorage;
+    private final LikeFilmStorage likeFilmStorage;
     // USER
 
     @Test
@@ -64,14 +72,14 @@ class FilmorateApplicationTests {
 
     @Test
     public void testFriend() {
-        userStorage.createFriend(2,1);
-        assertEquals(userStorage.findFriends(1).size(), 1);
-        userStorage.createFriend(3,1);
-        userStorage.createFriend(1,2);
-        userStorage.createFriend(3,2);
-        assertEquals(userStorage.findOtherFriends(1,2).size(), 1);
-        userStorage.deleteFriend(2,1);
-        assertEquals(userStorage.findFriends(1).size(), 1);
+        friendshipStorage.createFriend(2,1);
+        assertEquals(friendshipStorage.findFriends(1).size(), 1);
+        friendshipStorage.createFriend(3,1);
+        friendshipStorage.createFriend(1,2);
+        friendshipStorage.createFriend(3,2);
+        assertEquals(friendshipStorage.findOtherFriends(1,2).size(), 1);
+        friendshipStorage.deleteFriend(2,1);
+        assertEquals(friendshipStorage.findFriends(1).size(), 1);
     }
 
     // FILM
@@ -115,28 +123,28 @@ class FilmorateApplicationTests {
 
     @Test
     public void testCategory() {
-        List<Category> categories = filmStorage.findAllCategory();
+        List<Category> categories = categoryStorage.findAll();
         assertEquals(categories.size(), 6);
     }
 
     @Test
     public void testCategoryId() {
-        Optional<Category> category = filmStorage.findByIdCategory(1);
-        Optional<Category> category1 = filmStorage.findByIdCategory(7);
+        Optional<Category> category = categoryStorage.findById(1);
+        Optional<Category> category1 = categoryStorage.findById(7);
         assertTrue(category.isPresent());
         assertFalse(category1.isPresent());
     }
 
     @Test
     public void testMpa() {
-        List<RatingMpa> ratingMpas = filmStorage.findAllMpa();
+        List<RatingMpa> ratingMpas = mpaStorage.findAll();
         assertEquals(ratingMpas.size(), 5);
     }
 
     @Test
     public void testMpaId() {
-        Optional<RatingMpa> ratingMpa = filmStorage.findByIdMpa(1);
-        Optional<RatingMpa> ratingMpa1 = filmStorage.findByIdMpa(7);
+        Optional<RatingMpa> ratingMpa = mpaStorage.findById(1);
+        Optional<RatingMpa> ratingMpa1 = mpaStorage.findById(7);
         assertTrue(ratingMpa.isPresent());
         assertFalse(ratingMpa1.isPresent());
     }
@@ -160,13 +168,13 @@ class FilmorateApplicationTests {
         userStorage.create(user3);
         filmStorage.create(film1);
         filmStorage.create(film2);
-        filmStorage.createLike(2, 1);
-        filmStorage.createLike(2, 2);
+        likeFilmStorage.createLike(2, 1);
+        likeFilmStorage.createLike(2, 2);
         assertEquals(filmStorage.filmsPopular(1).get(0).getId(), 2);
-        filmStorage.createLike(1, 1);
-        filmStorage.createLike(1, 2);
-        filmStorage.deleteLike(2, 1);
-        filmStorage.deleteLike(2, 2);
+        likeFilmStorage.createLike(1, 1);
+        likeFilmStorage.createLike(1, 2);
+        likeFilmStorage.deleteLike(2, 1);
+        likeFilmStorage.deleteLike(2, 2);
         assertEquals(filmStorage.filmsPopular(1).get(0).getId(), 1);
     }
 }

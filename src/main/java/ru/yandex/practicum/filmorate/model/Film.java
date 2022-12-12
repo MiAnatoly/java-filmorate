@@ -18,6 +18,7 @@ public class Film {
     private int id;
     @NotBlank
     private String name;
+    @NotBlank
     @Size(max = 200)
     @EqualsAndHashCode.Exclude
     private String description;
@@ -27,6 +28,7 @@ public class Film {
     @Positive
     @EqualsAndHashCode.Exclude
     private int duration;
+    @NotNull
     private RatingMpa mpa;
     private List<Category> genres;
 
