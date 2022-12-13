@@ -31,12 +31,12 @@ public class MpaDbStorageImpl implements MpaStorage {
 
     @Override
     public Optional<RatingMpa> findById(Integer id) {
-        SqlRowSet ratingRows = jdbcTemplate.queryForRowSet("select * from RATING_MPA where RATING_ID = ?", id);
+        SqlRowSet ratingRows = jdbcTemplate.queryForRowSet("SELECT * FROM RATING_MPA WHERE RATING_ID = ?", id);
         if (ratingRows.next()) {
             RatingMpa ratingMpa = new RatingMpa(ratingRows.getInt("RATING_ID"),
                     ratingRows.getString("RATING"));
             return Optional.of(ratingMpa);
-        } else log.info("Фильм с идентификатором {} не найден.", id);
+        } else log.info("рейтинг с идентификатором {} не найден.", id);
         return Optional.empty();
     } // показать рейтинг по id
 }

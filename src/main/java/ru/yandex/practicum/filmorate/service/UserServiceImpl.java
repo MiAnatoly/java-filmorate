@@ -47,7 +47,7 @@ public class UserServiceImpl implements ru.yandex.practicum.filmorate.service.Us
 
     @Override
     public void createFriend(Integer friendId, Integer id) {
-        friendshipStorage.createFriend(friendId, id);
+       friendshipStorage.createFriend(friendId, id);
     }
     // добавить друга
 

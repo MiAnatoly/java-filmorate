@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.storage.film.LikeFilmStorage;
 @Repository
 public class LikeFilmStorageImpl implements LikeFilmStorage {
 
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public LikeFilmStorageImpl(JdbcTemplate jdbcTemplate) {
@@ -17,14 +17,14 @@ public class LikeFilmStorageImpl implements LikeFilmStorage {
 
     @Override
     public void createLike(Integer id, Integer userId) {
-        String sqlQuery = "insert into LIKE_FILM (FILM_ID, USER_ID) " +
-                "values (?, ?)";
+        String sqlQuery = "INSERT INTO LIKE_FILM (FILM_ID, USER_ID) " +
+                "VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, id, userId);
     } // добавить лайк
 
     @Override
     public void deleteLike(Integer id, Integer userId) {
-        String sqlQuery = "delete from LIKE_FILM where FILM_ID = ? AND USER_ID = ?";
+        String sqlQuery = "DELETE FROM LIKE_FILM WHERE FILM_ID = ? AND USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
     } // удалить лайк
 }

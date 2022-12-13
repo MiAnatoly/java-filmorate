@@ -34,12 +34,12 @@ public class UserDbStorageImpl implements UserStorage {
     public List<User> findAll() {
         String sql = "SELECT * FROM USERS_FILMS";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
-    } // Показать пользователей
+    } // показать пользователей
 
     @Override
     public User create(User user) {
         String sqlQuery = "INSERT INTO USERS_FILMS (NAME, EMAIL, LOGIN, BIRTHDAY) " +
-                "values (?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"USER_ID"});
@@ -51,7 +51,7 @@ public class UserDbStorageImpl implements UserStorage {
         }, keyHolder);
         user.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         return user;
-    } // Добавить пользователя
+    } // добавить пользователя
 
     @Override
     public Optional<User> update(User user) {
@@ -68,7 +68,7 @@ public class UserDbStorageImpl implements UserStorage {
             return Optional.of(user);
         } else log.info("Пользователь с идентификатором {} не найден.", user.getId());
         return Optional.empty();
-    } // Обнавить пользователя
+    } // обнавить пользователя
 
     @Override
     public Optional<User> findById(Integer id) {

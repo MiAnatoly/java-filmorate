@@ -56,7 +56,6 @@ create table IF NOT EXISTS FRIENDSHIP
 (
     USER_ID   INTEGER not null,
     FRIEND_ID INTEGER not null,
-    STATUS    BOOLEAN,
     constraint "FRIENDSHIP_USERS_FILMS_USER_ID_fk"
         foreign key (FRIEND_ID) references USERS_FILMS,
     constraint "FRIENDSHIP_USERS_FILMS_null_fk"

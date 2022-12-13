@@ -18,7 +18,7 @@ public class GenresController {
     private final FilmService service;
 
     @GetMapping
-    public List<Category> findAllCategory() {
+    public List<Category> findAll() {
         return service.findAllCategory();
     }
     // показать все категории

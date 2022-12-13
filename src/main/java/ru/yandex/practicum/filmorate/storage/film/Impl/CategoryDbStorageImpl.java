@@ -36,7 +36,7 @@ public class CategoryDbStorageImpl implements CategoryStorage {
 
     @Override
     public Optional<Category> findById(Integer id) {
-        SqlRowSet categoryRows = jdbcTemplate.queryForRowSet("select * from CATEGORY where CATEGORY_ID = ?", id);
+        SqlRowSet categoryRows = jdbcTemplate.queryForRowSet("SELECT * FROM CATEGORY WHERE CATEGORY_ID = ?", id);
         if (categoryRows.next()) {
             Category category = new Category(categoryRows.getInt("CATEGORY_ID"),
                     categoryRows.getString("CATEGORY"));
@@ -73,7 +73,7 @@ public class CategoryDbStorageImpl implements CategoryStorage {
                 filmsMap.keySet().toArray(),
                 (rs, rowNum) -> filmsMap.get(rs.getInt("FILM_ID")).getGenres().add( new Category(rs.getInt("CATEGORY_ID"), rs.getString("CATEGORY"))));
         return new ArrayList<>(filmsMap.values());
-    }// вернуть категории фильма
+    }// вернуть категории фильмов
 
     @Override
     public void createFilmCategories(Film film) {
@@ -81,7 +81,7 @@ public class CategoryDbStorageImpl implements CategoryStorage {
             List<Category> categories = film.getGenres().stream()
                     .distinct().collect(Collectors.toList());
             jdbcTemplate.batchUpdate(
-                    "insert into FILM_CATEGORY (FILM_ID, CATEGORY_ID) values (?,?)",
+                    "INSERT INTO FILM_CATEGORY (FILM_ID, CATEGORY_ID) VALUES (?,?)",
                     new BatchPreparedStatementSetter() {
                         public void setValues(PreparedStatement ps, int i) throws SQLException {
                             ps.setInt(1, film.getId());
@@ -92,10 +92,10 @@ public class CategoryDbStorageImpl implements CategoryStorage {
                         }
                     });
         }
-    } // добавить категории в БД
+    } // добавить категории фильма в БД
     @Override
     public void deleteFilmCategories(Film film) {
-        String sqlQuery = "delete from FILM_CATEGORY where FILM_ID = ?";
+        String sqlQuery = "DELETE FROM FILM_CATEGORY WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQuery, film.getId());
-    } // удалить категории из БД
+    } // удалить категории фильма из БД
 }

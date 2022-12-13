@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.Category;
@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.storage.film.MpaStorage;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FilmServiceImpl implements FilmService {
 
     private final FilmStorage filmStorage;
@@ -21,17 +22,6 @@ public class FilmServiceImpl implements FilmService {
     private final CategoryStorage categoryStorage;
     private final MpaStorage mpaStorage;
     private final LikeFilmStorage likeFilmStorage;
-
-    @Autowired
-    public FilmServiceImpl(FilmStorage filmStorage, UserService userService
-            , CategoryStorage categoryStorage, MpaStorage mpaStorage
-            , LikeFilmStorage likeFilmStorage) {
-        this.filmStorage = filmStorage;
-        this.userService = userService;
-        this.categoryStorage = categoryStorage;
-        this.mpaStorage = mpaStorage;
-        this.likeFilmStorage = likeFilmStorage;
-    }
 
     @Override
     public List<Film> findAll() {

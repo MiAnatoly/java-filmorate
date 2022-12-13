@@ -34,7 +34,7 @@ public class FilmDbStorageImpl implements FilmStorage {
     public List<Film> findAll() {
         String sql = "SELECT * FROM FILMS LEFT JOIN RATING_MPA RM on FILMS.RATING_ID = RM.RATING_ID";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
-    }
+    } // показать фильмы
 
     @Override
     public Film create(Film film) {
@@ -56,8 +56,8 @@ public class FilmDbStorageImpl implements FilmStorage {
 
     @Override
     public Optional<Film> update(Film film) {
-        String sqlQuery = "update FILMS set NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?" +
-                ", DURATION = ?,  RATING_ID = ? where FILM_ID = ?";
+        String sqlQuery = "UPDATE FILMS SET NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?" +
+                ", DURATION = ?,  RATING_ID = ? WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQuery,
                 film.getName(),
                 film.getDescription(),
@@ -86,12 +86,13 @@ public class FilmDbStorageImpl implements FilmStorage {
 
     @Override
     public List<Film> filmsPopular(Integer count) {
-        String sql = "SELECT f.film_id, COUNT(lf.user_id) AS count_like " +
-                "FROM films AS f LEFT OUTER JOIN like_film AS lf ON f.film_id = lf.film_id " +
-                "GROUP BY f.name " +
-                "ORDER BY count_like DESC " +
+        String sql = "SELECT f.*, rm.RATING " +
+                "FROM FILMS AS f LEFT OUTER JOIN like_film AS lf ON f.FILM_ID = lf.FILM_ID " +
+                "LEFT JOIN RATING_MPA rm on f.RATING_ID = rm.RATING_ID " +
+                "GROUP BY f.NAME " +
+                "ORDER BY COUNT(lf.USER_ID) DESC " +
                 "LIMIT " + count;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> findById(rs.getInt("FILM_ID")).orElse(null));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
     } // показать попюлярные филмы
 
     private Film makeFilm(ResultSet rs) throws SQLException {
