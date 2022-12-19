@@ -16,7 +16,7 @@ public class FilmControllerTest {
     @Test
     public void DataNotEarlier1895Test() {
         controller = new FilmController(null);
-        film = new Film(1, "space", "journey into space", LocalDate.of(1895, 12, 27), 220);
+        film = new Film(1, "space", "journey into space", LocalDate.of(1895, 12, 27), 220, null, null);
         boolean thrown = false;
         try {
             controller.validate(film);

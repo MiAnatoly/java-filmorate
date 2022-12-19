@@ -3,21 +3,22 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
-import ru.yandex.practicum.filmorate.Exception.RepeatObjectException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements ru.yandex.practicum.filmorate.service.UserService {
+
     private final UserStorage userStorage;
+    private final FriendshipStorage friendshipStorage;
 
     @Autowired
-    public UserServiceImpl(UserStorage userStorage) {
+    public UserServiceImpl(UserStorage userStorage, FriendshipStorage friendshipStorage) {
         this.userStorage = userStorage;
+        this.friendshipStorage = friendshipStorage;
     }
 
     @Override
@@ -34,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(User user) {
-        return userStorage.update(user);
+        return userStorage.update(user).orElseThrow(() -> new NotObjectException("нет пользователя"));
     }
     // обнавит пользователя
 
@@ -46,50 +47,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createFriend(Integer friendId, Integer id) {
-        User friend = findById(friendId);
-        User my = findById(id);
-        if (my.getFriendsId().contains(friendId)
-                && friend.getFriendsId().contains(id))
-            throw new RepeatObjectException("пользователь уже в друзьях");
-        my.getFriendsId().add(friendId);
-        friend.getFriendsId().add(id);
+       friendshipStorage.createFriend(friendId, id);
     }
     // добавить друга
 
     @Override
     public void deleteFriend(Integer friendId, Integer id) {
-        User friend = findById(friendId);
-        User my = findById(id);
-        if (!(my.getFriendsId().contains(friendId)
-                && friend.getFriendsId().contains(id)))
-            throw new RuntimeException("пользователя нет в друзьях");
-        my.getFriendsId().remove(friendId);
-        friend.getFriendsId().remove(id);
-
+        friendshipStorage.deleteFriend(friendId, id);
     }
     // удалить друга
 
     @Override
     public List<User> findFriends(Integer id) {
-        List<Integer> friendsId = new ArrayList<>(findById(id).getFriendsId());
-        return friendsUser(friendsId);
+        return friendshipStorage.findFriends(id);
     }
     // показать друзей
 
     @Override
     public List<User> findOtherFriends(Integer otherId, Integer id) {
-        findById(otherId);
-        findById(id);
-        List<Integer> myFriendsId = new ArrayList<>(findById(id).getFriendsId());
-        List<Integer> friendsId = new ArrayList<>(findById(otherId).getFriendsId());
-        List<Integer> OtherFriendsId = myFriendsId.stream().filter(friendsId::contains)
-                .collect(Collectors.toList());
-        return friendsUser(OtherFriendsId);
+        return friendshipStorage.findOtherFriends(otherId, id);
     }
     // показать общих друзей
-
-    private List<User> friendsUser(List<Integer> friendsId) {
-        return friendsId.stream().map(this::findById).collect(Collectors.toList());
-    }
-    // воспомогательный метод для преобразования списка из ID пользователей в список из пользователей
 }
