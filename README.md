@@ -1,7 +1,7 @@
 # java-filmorate
 ER диаграмма
+![QuickDBD-Free Diagram](https://user-images.githubusercontent.com/102370323/207307474-708e45b5-8bb7-4205-8f70-241891b550a6.png)
 
-![](../Desktop/задание/QuickDBD-Free Diagram.png)
 Программа для работы с информацией о фильмах и её пользователей
 
 # Работа с БАЗОЙ ДАННЫХ
