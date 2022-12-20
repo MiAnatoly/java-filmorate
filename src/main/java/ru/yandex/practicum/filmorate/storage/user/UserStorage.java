@@ -13,6 +13,8 @@ public interface UserStorage {
 
     Optional<User> update(User user);
 
+    void deleteUser(int id);
+
     Optional<User> findById(Integer id);
 
 }

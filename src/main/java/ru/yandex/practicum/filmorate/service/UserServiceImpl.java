@@ -4,21 +4,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.LikeFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements ru.yandex.practicum.filmorate.service.UserService {
+public class UserServiceImpl implements UserService {
 
     private final UserStorage userStorage;
     private final FriendshipStorage friendshipStorage;
+    private final LikeFilmStorage likeFilmStorage;
 
     @Autowired
-    public UserServiceImpl(UserStorage userStorage, FriendshipStorage friendshipStorage) {
+    public UserServiceImpl(UserStorage userStorage, FriendshipStorage friendshipStorage
+            , LikeFilmStorage likeFilmStorage) {
         this.userStorage = userStorage;
         this.friendshipStorage = friendshipStorage;
+        this.likeFilmStorage = likeFilmStorage;
     }
 
     @Override
@@ -38,6 +42,12 @@ public class UserServiceImpl implements ru.yandex.practicum.filmorate.service.Us
         return userStorage.update(user).orElseThrow(() -> new NotObjectException("нет пользователя"));
     }
     // обнавит пользователя
+
+    public void deleteUser(int id) {
+        likeFilmStorage.removeLikesUser(id);
+        friendshipStorage.deleteAllFriendsUser(id);
+        userStorage.deleteUser(id);
+    }
 
     @Override
     public User findById(Integer id) {
@@ -59,7 +69,11 @@ public class UserServiceImpl implements ru.yandex.practicum.filmorate.service.Us
 
     @Override
     public List<User> findFriends(Integer id) {
-        return friendshipStorage.findFriends(id);
+        List<User> friendsUser = friendshipStorage.findFriends(id);
+        if(friendsUser.isEmpty())
+            findById(id);
+        return friendsUser;
+
     }
     // показать друзей
 

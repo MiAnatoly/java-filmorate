@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -69,6 +70,19 @@ public class UserDbStorageImpl implements UserStorage {
         } else log.info("Пользователь с идентификатором {} не найден.", user.getId());
         return Optional.empty();
     } // обнавить пользователя
+
+    @Override
+    public void deleteUser(int id) {
+        String sql =
+                "DELETE FROM USERS_FILMS " +
+                        "WHERE USER_ID = ?";
+
+        int result = jdbcTemplate.update(sql, id);
+        if(result == 1)
+            log.info("Удалён пользователь id {}", id);
+        else
+            throw new NotObjectException("Пользователь не найден для удаления.");
+    }
 
     @Override
     public Optional<User> findById(Integer id) {
