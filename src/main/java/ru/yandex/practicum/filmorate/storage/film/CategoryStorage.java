@@ -17,5 +17,5 @@ public interface CategoryStorage {
 
     void createFilmCategories(Film film); // добавить категории в БД
 
-    void deleteFilmCategories(Film film); // удалить категории из БД
+    void deleteFilmCategories(int id); // удалить категории из БД
 }

@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
+import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -75,6 +76,19 @@ public class FilmDbStorageImpl implements FilmStorage {
     } // обновить фильм
 
     @Override
+    public void deleteFilm(int id) {
+        String sql =
+                "DELETE " +
+                        "FROM FILMS " +
+                        "WHERE FILM_ID = ?";
+        int result = jdbcTemplate.update(sql, id);
+        if(result == 1)
+            log.info("Удалён фильм id {}", id);
+        else
+            throw new NotObjectException("Фильм не найден для удаления.");
+    } // удалить фильм
+
+    @Override
     public Optional<Film> findById(Integer id) {
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT * FROM FILMS" +
                 " LEFT JOIN RATING_MPA RM on FILMS.RATING_ID = RM.RATING_ID WHERE FILM_ID = ? ", id);
@@ -89,7 +103,7 @@ public class FilmDbStorageImpl implements FilmStorage {
         String sql = "SELECT f.*, rm.RATING " +
                 "FROM FILMS AS f LEFT OUTER JOIN like_film AS lf ON f.FILM_ID = lf.FILM_ID " +
                 "LEFT JOIN RATING_MPA rm on f.RATING_ID = rm.RATING_ID " +
-                "GROUP BY f.NAME " +
+                "GROUP BY f.FILM_ID " +
                 "ORDER BY COUNT(lf.USER_ID) DESC " +
                 "LIMIT " + count;
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));

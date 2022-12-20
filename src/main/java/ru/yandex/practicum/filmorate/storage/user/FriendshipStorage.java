@@ -12,4 +12,6 @@ public interface FriendshipStorage {
     List<User> findFriends(Integer id); // показать друзей пользователя
 
     List<User> findOtherFriends(Integer otherId, Integer id); // общие друзья
+
+    void deleteAllFriendsUser(int id); // удалить всех друзей
 }
