@@ -59,6 +59,9 @@ public class CategoryDbStorageImpl implements CategoryStorage {
 
     @Override
     public List<Film> allFilmsCategories(List<Film> films) {
+        if(films.isEmpty()) {
+            return films;
+        }
         Map<Integer, Film> filmsMap = films.stream().collect(Collectors.toMap(
                 Film::getId, Function.identity(),
                 (e1, e2) -> e1, HashMap::new));
@@ -68,8 +71,8 @@ public class CategoryDbStorageImpl implements CategoryStorage {
                 String.format("SELECT * FROM FILM_CATEGORY AS f " +
                         "LEFT OUTER JOIN CATEGORY AS C ON f.CATEGORY_ID = c.CATEGORY_ID " +
                         "WHERE FILM_ID IN (%s) " +
-                        " GROUP BY FILM_ID" +
-                        " ORDER BY FILM_ID, CATEGORY_ID", inSql),
+                        " GROUP BY FILM_ID, f.CATEGORY_ID" +
+                        " ORDER BY FILM_ID, f.CATEGORY_ID", inSql),
                 filmsMap.keySet().toArray(),
                 (rs, rowNum) -> filmsMap.get(rs.getInt("FILM_ID")).getGenres().add( new Category(rs.getInt("CATEGORY_ID"), rs.getString("CATEGORY"))));
         return new ArrayList<>(filmsMap.values());

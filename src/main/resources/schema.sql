@@ -75,3 +75,25 @@ create table IF NOT EXISTS LIKE_FILM
     constraint "LIKE_FILM_null_fk"
         primary key (USER_ID, FILM_ID)
 );
+
+create table  IF NOT EXISTS DIRECTORS
+(
+    DIRECTOR_ID   INTEGER auto_increment,
+    DIRECTOR_NAME CHARACTER VARYING(30) not null,
+    constraint "DIRECTORS_pk"
+        primary key (DIRECTOR_ID)
+);
+
+create table IF NOT EXISTS FILM_DIRECTOR
+(
+    FILM_ID     INTEGER not null,
+    DIRECTOR_ID INTEGER not null,
+    constraint "FILM_DIRECTOR_pk"
+        primary key (FILM_ID, DIRECTOR_ID),
+    constraint "FILM_DIRECTOR_DIRECTORS_null_fk"
+        foreign key (DIRECTOR_ID) references DIRECTORS
+            on delete cascade,
+    constraint "FILM_DIRECTOR_FILMS_null_fk"
+        foreign key (FILM_ID) references FILMS
+            on delete cascade
+);

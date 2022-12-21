@@ -66,6 +66,11 @@ public class FilmController {
     }
     // список из первых фильмов по лайкам
 
+    @GetMapping("/director/{directorId}")
+    public List<Film> filmsByDirectorSortByLikes(@PathVariable int directorId, @RequestParam String sortBy) {
+        return service.findFilmsByDirectorSorted(directorId, sortBy);
+    }
+
     void validate(Film film) {
         if (film.getReleaseDate().isBefore(LIMIT_DATA))
             throw new ValidationException("Дата релиза не может быть раньше " + LIMIT_DATA);

@@ -17,5 +17,7 @@ public interface FilmStorage {
 
     List<Film> filmsPopular(Integer count);
 
+    List<Film> filmsByDirectorSortByLikes(int directorId);
 
+    List<Film> filmsByDirectorSortByYear(int directorId);
 }
