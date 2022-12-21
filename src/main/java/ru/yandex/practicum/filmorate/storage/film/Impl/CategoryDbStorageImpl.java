@@ -71,8 +71,7 @@ public class CategoryDbStorageImpl implements CategoryStorage {
                 String.format("SELECT * FROM FILM_CATEGORY AS f " +
                         "LEFT OUTER JOIN CATEGORY AS C ON f.CATEGORY_ID = c.CATEGORY_ID " +
                         "WHERE FILM_ID IN (%s) " +
-                        " GROUP BY FILM_ID, f.CATEGORY_ID" +
-                        " ORDER BY FILM_ID, f.CATEGORY_ID", inSql),
+                        " ORDER BY FILM_ID", inSql),
                 filmsMap.keySet().toArray(),
                 (rs, rowNum) -> filmsMap.get(rs.getInt("FILM_ID")).getGenres().add( new Category(rs.getInt("CATEGORY_ID"), rs.getString("CATEGORY"))));
         return new ArrayList<>(filmsMap.values());
@@ -97,8 +96,8 @@ public class CategoryDbStorageImpl implements CategoryStorage {
         }
     } // добавить категории фильма в БД
     @Override
-    public void deleteFilmCategories(Film film) {
+    public void deleteFilmCategories(int id) {
         String sqlQuery = "DELETE FROM FILM_CATEGORY WHERE FILM_ID = ?";
-        jdbcTemplate.update(sqlQuery, film.getId());
+        jdbcTemplate.update(sqlQuery, id);
     } // удалить категории фильма из БД
 }

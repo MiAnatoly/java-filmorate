@@ -27,4 +27,22 @@ public class LikeFilmStorageImpl implements LikeFilmStorage {
         String sqlQuery = "DELETE FROM LIKE_FILM WHERE FILM_ID = ? AND USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
     } // удалить лайк
+
+    @Override
+    public void removeLikesFilm(int id) {
+        String sql =
+                "DELETE " +
+                        "FROM LIKE_FILM " +
+                        "WHERE FILM_ID = ?";
+        jdbcTemplate.update(sql, id);
+    } // удалить все лайки фильма
+
+    @Override
+    public void removeLikesUser(int id) {
+        String sql =
+                "DELETE " +
+                        "FROM LIKE_FILM " +
+                        "WHERE USER_ID = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }

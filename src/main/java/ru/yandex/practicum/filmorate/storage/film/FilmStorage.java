@@ -13,6 +13,8 @@ public interface FilmStorage {
 
     Optional<Film> update(Film film);
 
+    void deleteFilm(int id);
+
     Optional<Film> findById(Integer id);
 
     List<Film> filmsPopular(Integer count);

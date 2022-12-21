@@ -54,6 +54,16 @@ public class FriendshipStorageImpl implements FriendshipStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
     } // общие друзья
 
+    @Override
+    public void deleteAllFriendsUser(int id) {
+        String sql =
+                "DELETE " +
+                        "FROM FRIENDSHIP " +
+                        "WHERE USER_ID = ?" +
+                        "OR FRIEND_ID = ?";
+        jdbcTemplate.update(sql, id, id);
+    } // удалить всех друзей
+
     private User makeUser(ResultSet rs) throws SQLException {
         int id = rs.getInt("USER_ID");
         String name = rs.getString("NAME");

@@ -42,13 +42,19 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public Film update(Film film) {
         Film film1 = filmStorage.update(film).orElseThrow(() -> new NotObjectException("нет фильма"));
-        categoryStorage.deleteFilmCategories(film1);
+        categoryStorage.deleteFilmCategories(film1.getId());
         categoryStorage.createFilmCategories(film1);
         film1.setMpa(mpaStorage.findById(film1.getMpa().getId()).orElse(null));
         return categoryStorage.filmCategories(film1);
     }
     // обнавить фильм
 
+    public void deleteFilm(int id) {
+        likeFilmStorage.removeLikesFilm(id);
+        categoryStorage.deleteFilmCategories(id);
+        filmStorage.deleteFilm(id);
+    }
+    // удалить фильм
     @Override
     public Film findById(Integer id) {
         return categoryStorage.filmCategories(filmStorage.findById(id).orElseThrow(() -> new NotObjectException("нет фильма")));
