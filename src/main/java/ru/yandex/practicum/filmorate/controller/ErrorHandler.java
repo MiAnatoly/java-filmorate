@@ -40,10 +40,10 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-   @ExceptionHandler({NotObjectException.class, EntityNotFoundException.class})
+    @ExceptionHandler({NotObjectException.class, EntityNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleRuntime(final RuntimeException e) {
-       log.info(e.getMessage());
+        log.info(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
@@ -55,7 +55,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> exc(ConstraintViolationException ex){
+    public ResponseEntity<String> exc(ConstraintViolationException ex) {
         log.debug(ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }

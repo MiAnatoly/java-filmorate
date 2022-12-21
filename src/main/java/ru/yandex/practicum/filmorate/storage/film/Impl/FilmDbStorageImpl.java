@@ -7,9 +7,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-
-import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.storage.film.DirectorStorage;
@@ -54,7 +53,7 @@ public class FilmDbStorageImpl implements FilmStorage {
         List<Integer> filmIds = films.stream()
                 .map(Film::getId)
                 .collect(Collectors.toList());
-        Map<Integer,List<Director>> filmDirectorsMapping = directorStorage.findByFilmIds(filmIds);
+        Map<Integer, List<Director>> filmDirectorsMapping = directorStorage.findByFilmIds(filmIds);
         films.forEach(f -> f.setDirectors(filmDirectorsMapping.getOrDefault(f.getId(), Collections.emptyList())));
     }
 
@@ -114,7 +113,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                         "FROM FILMS " +
                         "WHERE FILM_ID = ?";
         int result = jdbcTemplate.update(sql, id);
-        if(result == 1)
+        if (result == 1)
             log.info("Удалён фильм id {}", id);
         else
             throw new NotObjectException("Фильм не найден для удаления.");

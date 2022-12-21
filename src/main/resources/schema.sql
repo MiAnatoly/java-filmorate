@@ -1,7 +1,6 @@
-
-create table IF NOT EXISTS  RATING_MPA
+create table IF NOT EXISTS RATING_MPA
 (
-    RATING_ID INTEGER not null,
+    RATING_ID INTEGER              not null,
     RATING    CHARACTER VARYING(5) not null,
     constraint "RATING_MPA_pk"
         primary key (RATING_ID)
@@ -23,7 +22,7 @@ create table IF NOT EXISTS FILMS
 
 create table IF NOT EXISTS CATEGORY
 (
-    CATEGORY        CHARACTER VARYING(45) not null,
+    CATEGORY    CHARACTER VARYING(45) not null,
     CATEGORY_ID INTEGER               not null,
     constraint "CATEGORY_pk"
         primary key (CATEGORY_ID)
@@ -76,7 +75,7 @@ create table IF NOT EXISTS LIKE_FILM
         primary key (USER_ID, FILM_ID)
 );
 
-create table  IF NOT EXISTS DIRECTORS
+create table IF NOT EXISTS DIRECTORS
 (
     DIRECTOR_ID   INTEGER auto_increment,
     DIRECTOR_NAME CHARACTER VARYING(30) not null,

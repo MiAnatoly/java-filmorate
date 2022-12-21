@@ -32,8 +32,8 @@ public class FilmDirectorDbStorageImpl implements FilmDirectorStorage {
     public void createBatch(int filmId, List<Integer> directorIds) {
         String sql = "insert into FILM_DIRECTOR (FILM_ID, DIRECTOR_ID) values(:filmId, :directorId)";
         jdbcTemplate.batchUpdate(sql, directorIds.stream().map(directorId -> new MapSqlParameterSource()
-                .addValue("filmId", filmId)
-                .addValue("directorId", directorId))
+                        .addValue("filmId", filmId)
+                        .addValue("directorId", directorId))
                 .toArray(SqlParameterSource[]::new));
     }
 

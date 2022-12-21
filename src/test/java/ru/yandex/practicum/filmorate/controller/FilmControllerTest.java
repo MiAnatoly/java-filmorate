@@ -4,9 +4,10 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.time.LocalDate;
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FilmControllerTest {
 
@@ -16,7 +17,7 @@ public class FilmControllerTest {
     @Test
     public void DataNotEarlier1895Test() {
         controller = new FilmController(null);
-        film = new Film(1, "space", "journey into space", LocalDate.of(1895, 12, 27), 220, null, null);
+        film = new Film(1, "space", "journey into space", LocalDate.of(1895, 12, 27), 220, null, null, Collections.emptyList());
         boolean thrown = false;
         try {
             controller.validate(film);

@@ -78,7 +78,7 @@ public class UserDbStorageImpl implements UserStorage {
                         "WHERE USER_ID = ?";
 
         int result = jdbcTemplate.update(sql, id);
-        if(result == 1)
+        if (result == 1)
             log.info("Удалён пользователь id {}", id);
         else
             throw new NotObjectException("Пользователь не найден для удаления.");
