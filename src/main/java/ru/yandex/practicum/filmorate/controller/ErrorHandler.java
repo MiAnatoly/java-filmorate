@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.filmorate.Exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.Exception.RepeatObjectException;
 import ru.yandex.practicum.filmorate.Exception.ValidationException;
@@ -39,9 +40,9 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({NotObjectException.class, EntityNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleRuntime(final NotObjectException e) {
+    public ErrorResponse handleRuntime(final RuntimeException e) {
         log.info(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
