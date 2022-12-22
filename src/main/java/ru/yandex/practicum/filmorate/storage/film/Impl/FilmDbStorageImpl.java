@@ -27,11 +27,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @Repository
 public class FilmDbStorageImpl implements FilmStorage {
-
     private final JdbcTemplate jdbcTemplate;
-
     private final DirectorStorage directorStorage;
-
     private final FilmDirectorStorage filmDirectorStorage;
 
     @Autowired
@@ -73,6 +70,7 @@ public class FilmDbStorageImpl implements FilmStorage {
             return stmt;
         }, keyHolder);
         film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        createFilmDirectors(film);
         return film;
     } // добавить фильм
 
@@ -132,6 +130,19 @@ public class FilmDbStorageImpl implements FilmStorage {
     } // показать фильм по id
 
     @Override
+    public List<Film> filmsPopular(Integer count) {
+        String sql = "SELECT f.*, rm.RATING " +
+                "FROM FILMS AS f LEFT OUTER JOIN like_film AS lf ON f.FILM_ID = lf.FILM_ID " +
+                "LEFT JOIN RATING_MPA rm on f.RATING_ID = rm.RATING_ID " +
+                "GROUP BY f.FILM_ID " +
+                "ORDER BY COUNT(lf.USER_ID) DESC " +
+                "LIMIT " + count;
+        List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
+        setDirectors(films);
+        return films;
+    } // показать попюлярные филмы
+
+    @Override
     public List<Film> filmsByDirectorSortByLikes(int directorId) {
         String sql = "select f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, f.RATING_ID, m.RATING " +
                 "from FILMS f " +
@@ -159,19 +170,6 @@ public class FilmDbStorageImpl implements FilmStorage {
         return films;
     }
 
-    @Override
-    public List<Film> filmsPopular(Integer count) {
-        String sql = "SELECT f.*, rm.RATING " +
-                "FROM FILMS AS f LEFT OUTER JOIN like_film AS lf ON f.FILM_ID = lf.FILM_ID " +
-                "LEFT JOIN RATING_MPA rm on f.RATING_ID = rm.RATING_ID " +
-                "GROUP BY f.FILM_ID " +
-                "ORDER BY COUNT(lf.USER_ID) DESC " +
-                "LIMIT " + count;
-        List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
-        setDirectors(films);
-        return films;
-    } // показать попюлярные филмы
-
     private Film makeFilm(ResultSet rs) throws SQLException {
         int id = rs.getInt("FILM_ID");
         String name = rs.getString("NAME");
@@ -191,8 +189,7 @@ public class FilmDbStorageImpl implements FilmStorage {
         LocalDate releaseDate = Objects.requireNonNull(filmRows.getDate("RELEASE_DATE")).toLocalDate();
         int duration = filmRows.getInt("DURATION");
         RatingMpa mpa = new RatingMpa(filmRows.getInt("RATING_ID"), filmRows.getString("RATING"));
-        return new Film(id, name, description, releaseDate, duration, mpa, new ArrayList<>(),
-                new ArrayList<>());
+        return new Film(id, name, description, releaseDate, duration, mpa, new ArrayList<>(), new ArrayList<>());
     } // добавить в фильм данные из БД через SqlRowSet
 
 }

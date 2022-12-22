@@ -18,10 +18,8 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 public class FilmController {
-    private final FilmService service;
-
     private static final LocalDate LIMIT_DATA = LocalDate.of(1895, 12, 28);
-
+    private final FilmService service;
     @GetMapping
     public List<Film> findAll() {
         return service.findAll();
@@ -70,6 +68,11 @@ public class FilmController {
         return service.filmsPopular(count);
     }
     // список из первых фильмов по лайкам
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> filmsByDirectorSortByLikes(@PathVariable int directorId, @RequestParam String sortBy) {
+        return service.findFilmsByDirectorSorted(directorId, sortBy);
+    }
 
     void validate(Film film) {
         if (film.getReleaseDate().isBefore(LIMIT_DATA))

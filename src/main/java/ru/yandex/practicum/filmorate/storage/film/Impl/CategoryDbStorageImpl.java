@@ -59,6 +59,9 @@ public class CategoryDbStorageImpl implements CategoryStorage {
 
     @Override
     public List<Film> allFilmsCategories(List<Film> films) {
+        if (films.isEmpty()) {
+            return films;
+        }
         Map<Integer, Film> filmsMap = films.stream().collect(Collectors.toMap(
                 Film::getId, Function.identity(),
                 (e1, e2) -> e1, HashMap::new));
@@ -86,7 +89,6 @@ public class CategoryDbStorageImpl implements CategoryStorage {
                             ps.setInt(1, film.getId());
                             ps.setInt(2, categories.get(i).getId());
                         }
-
                         public int getBatchSize() {
                             return categories.size();
                         }

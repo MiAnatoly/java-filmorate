@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,7 +60,8 @@ class FilmorateApplicationTests {
 
     @Test
     public void testUserUpdate() {
-        User user2 = new User(1, "sdddd@mail.ru", "sdd", "asr", LocalDate.of(1994, 12, 27));
+        User user2 = new User(1, "sdddd@mail.ru", "sdd", "asr",
+                LocalDate.of(1994, 12, 27));
         userStorage.update(user2);
         Optional<User> userOptional = userStorage.findById(1);
 
@@ -111,7 +113,9 @@ class FilmorateApplicationTests {
         List<Category> categories = new ArrayList<>();
         categories.add(new Category(1, null));
         categories.add(new Category(2, null));
-        Film film2 = new Film(1, "spaceRSd", "journey into spaceW", LocalDate.of(1991, 12, 27), 210, mpa, categories);
+        Film film2 = new Film(1, "spaceRSd", "journey into spaceW",
+                LocalDate.of(1991, 12, 27), 210, mpa, categories,
+                Collections.emptyList());
         filmStorage.update(film2);
         Optional<Film> filmOptional = filmStorage.findById(1);
         assertThat(filmOptional)
@@ -150,9 +154,12 @@ class FilmorateApplicationTests {
     }
     @Test
     public void testLike() {
-        User user1 = new User(0, "sdd@mail.ru", "sdd", "asr", LocalDate.of(1994, 12, 27));
-        User user2 = new User(0, "sdda@mail.ru", "ROg", "Ien", LocalDate.of(1993, 12, 27));
-        User user3 = new User(0, "sdaaasd@mail.ru", "Andry", "Tom", LocalDate.of(1998, 2, 12));
+        User user1 = new User(0, "sdd@mail.ru", "sdd", "asr",
+                LocalDate.of(1994, 12, 27));
+        User user2 = new User(0, "sdda@mail.ru", "ROg", "Ien",
+                LocalDate.of(1993, 12, 27));
+        User user3 = new User(0, "sdaaasd@mail.ru", "Andry", "Tom",
+                LocalDate.of(1998, 2, 12));
         RatingMpa mpa = new RatingMpa(1, null);
         RatingMpa mpa1 = new RatingMpa(2, null);
         List<Category> categories = new ArrayList<>();
@@ -161,8 +168,12 @@ class FilmorateApplicationTests {
         categories.add(new Category(2, null));
         categories1.add(new Category(1, null));
         categories1.add(new Category(2, null));
-        Film film1 = new Film(0, "spaceRS", "journey into spaceW", LocalDate.of(1991, 12, 27), 210, mpa, categories);
-        Film film2 = new Film(0, "space", "journey into space", LocalDate.of(2002, 12, 23), 220, mpa1, categories1);
+        Film film1 = new Film(0, "spaceRS", "journey into spaceW",
+                LocalDate.of(1991, 12, 27), 210, mpa, categories,
+                Collections.emptyList());
+        Film film2 = new Film(0, "space", "journey into space",
+                LocalDate.of(2002, 12, 23), 220, mpa1, categories1,
+                Collections.emptyList());
         userStorage.create(user1);
         userStorage.create(user2);
         userStorage.create(user3);
