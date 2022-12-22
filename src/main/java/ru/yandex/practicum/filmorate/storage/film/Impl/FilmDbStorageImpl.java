@@ -30,10 +30,6 @@ public class FilmDbStorageImpl implements FilmStorage {
     private final DirectorStorage directorStorage;
     private final FilmDirectorStorage filmDirectorStorage;
 
-    private final DirectorStorage directorStorage;
-
-    private final FilmDirectorStorage filmDirectorStorage;
-
     @Autowired
     public FilmDbStorageImpl(JdbcTemplate jdbcTemplate, DirectorStorage directorStorage,
                              FilmDirectorStorage filmDirectorStorage) {
