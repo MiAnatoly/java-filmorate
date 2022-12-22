@@ -70,7 +70,7 @@ public class CategoryDbStorageImpl implements CategoryStorage {
                         "WHERE FILM_ID IN (%s) " +
                         " ORDER BY FILM_ID", inSql),
                 filmsMap.keySet().toArray(),
-                (rs, rowNum) -> filmsMap.get(rs.getInt("FILM_ID")).getGenres().add( new Category(rs.getInt("CATEGORY_ID"), rs.getString("CATEGORY"))));
+                (rs, rowNum) -> filmsMap.get(rs.getInt("FILM_ID")).getGenres().add(new Category(rs.getInt("CATEGORY_ID"), rs.getString("CATEGORY"))));
         return new ArrayList<>(filmsMap.values());
     }// вернуть категории фильмов
 
@@ -86,12 +86,14 @@ public class CategoryDbStorageImpl implements CategoryStorage {
                             ps.setInt(1, film.getId());
                             ps.setInt(2, categories.get(i).getId());
                         }
+
                         public int getBatchSize() {
                             return categories.size();
                         }
                     });
         }
     } // добавить категории фильма в БД
+
     @Override
     public void deleteFilmCategories(int id) {
         String sqlQuery = "DELETE FROM FILM_CATEGORY WHERE FILM_ID = ?";

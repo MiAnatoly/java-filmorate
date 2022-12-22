@@ -30,4 +30,5 @@ public interface FilmService {
     List<RatingMpa> findAllMpa();
 
     RatingMpa findByIdMpa(Integer id);
+
 }

@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createFriend(Integer friendId, Integer id) {
-       friendshipStorage.createFriend(friendId, id);
+        friendshipStorage.createFriend(friendId, id);
     }
     // добавить друга
 
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findFriends(Integer id) {
         List<User> friendsUser = friendshipStorage.findFriends(id);
-        if(friendsUser.isEmpty())
+        if (friendsUser.isEmpty())
             findById(id);
         return friendsUser;
 

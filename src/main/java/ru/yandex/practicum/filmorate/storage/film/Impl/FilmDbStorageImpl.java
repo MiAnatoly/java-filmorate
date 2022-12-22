@@ -76,13 +76,13 @@ public class FilmDbStorageImpl implements FilmStorage {
     } // обновить фильм
 
     @Override
-    public void deleteFilm(int id) {
+    public void delete(int id) {
         String sql =
                 "DELETE " +
                         "FROM FILMS " +
                         "WHERE FILM_ID = ?";
         int result = jdbcTemplate.update(sql, id);
-        if(result == 1)
+        if (result == 1)
             log.info("Удалён фильм id {}", id);
         else
             throw new NotObjectException("Фильм не найден для удаления.");

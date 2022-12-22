@@ -75,3 +75,35 @@ create table IF NOT EXISTS LIKE_FILM
     constraint "LIKE_FILM_null_fk"
         primary key (USER_ID, FILM_ID)
 );
+
+create table IF NOT EXISTS REVIEWS
+(
+    REVIEW_ID INTEGER AUTO_INCREMENT,
+    CONTENT VARCHAR(200),
+    IS_POSITIVE BOOLEAN NOT NULL,
+    USER_ID INTEGER NOT NULL,
+    FILM_ID INTEGER NOT NULL,
+    CONSTRAINT "REVIEW_pk"
+        PRIMARY KEY (REVIEW_ID),
+    CONSTRAINT "REVIEW_USER_fk"
+        FOREIGN KEY (USER_ID) REFERENCES USERS_FILMS
+            ON DELETE CASCADE,
+    CONSTRAINT "REVIEW_FILM_fk"
+        FOREIGN KEY (FILM_ID) REFERENCES FILMS
+            ON DELETE CASCADE
+);
+
+create table IF NOT EXISTS LIKE_REVIEW
+(
+    REVIEW_ID INTEGER not null,
+    USER_ID INTEGER not null,
+    IS_POSITIVE BOOLEAN NOT NULL,
+    constraint "LIKE_REVIEW_FILMS_null_fk"
+        foreign key (REVIEW_ID) references REVIEWS
+            ON DELETE CASCADE,
+    constraint "LIKE_LIKE_REVIEW_FILMS_null_fk"
+        foreign key (USER_ID) references USERS_FILMS
+            ON DELETE CASCADE,
+    constraint "LIKE_REVIEW_null_fk"
+        primary key (USER_ID, REVIEW_ID)
+);
