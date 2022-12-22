@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.Category;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
+import ru.yandex.practicum.filmorate.model.Search;
 import ru.yandex.practicum.filmorate.storage.film.CategoryStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.LikeFilmStorage;
@@ -106,6 +107,11 @@ public class FilmServiceImpl implements FilmService {
         return mpaStorage.findById(id).orElseThrow(() -> new NotObjectException("нет категории"));
     }
     // показать рейтинг по id
+
+    @Override
+    public List<Film> searchForFilm(Search search) {
+        return filmStorage.searchForFilm(search);
+    }
 }
 
 
