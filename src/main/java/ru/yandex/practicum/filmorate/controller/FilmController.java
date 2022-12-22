@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.Exception.ValidationException;
@@ -20,6 +19,7 @@ import java.util.List;
 public class FilmController {
     private static final LocalDate LIMIT_DATA = LocalDate.of(1895, 12, 28);
     private final FilmService service;
+
     @GetMapping
     public List<Film> findAll() {
         return service.findAll();

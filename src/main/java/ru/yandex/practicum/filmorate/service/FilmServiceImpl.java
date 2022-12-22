@@ -130,7 +130,6 @@ public class FilmServiceImpl implements FilmService {
                 throw new ValidationException("Wrong sortType expected: {'year', 'likes'} current : " + sortType);
         }
     }
-
 }
 
 

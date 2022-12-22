@@ -16,14 +16,14 @@ import ru.yandex.practicum.filmorate.storage.film.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
@@ -45,6 +45,7 @@ class FilmorateApplicationTests {
         List<User> users = userStorage.findAll();
         assertEquals(users.size(), 3);
     }
+
     @Test
     public void testFindUserById() {
         Optional<User> userOptional = userStorage.findById(1);
@@ -74,13 +75,13 @@ class FilmorateApplicationTests {
 
     @Test
     public void testFriend() {
-        friendshipStorage.createFriend(2,1);
+        friendshipStorage.createFriend(2, 1);
         assertEquals(friendshipStorage.findFriends(1).size(), 1);
-        friendshipStorage.createFriend(3,1);
-        friendshipStorage.createFriend(1,2);
-        friendshipStorage.createFriend(3,2);
-        assertEquals(friendshipStorage.findOtherFriends(1,2).size(), 1);
-        friendshipStorage.deleteFriend(2,1);
+        friendshipStorage.createFriend(3, 1);
+        friendshipStorage.createFriend(1, 2);
+        friendshipStorage.createFriend(3, 2);
+        assertEquals(friendshipStorage.findOtherFriends(1, 2).size(), 1);
+        friendshipStorage.deleteFriend(2, 1);
         assertEquals(friendshipStorage.findFriends(1).size(), 1);
     }
 
@@ -113,6 +114,7 @@ class FilmorateApplicationTests {
         List<Category> categories = new ArrayList<>();
         categories.add(new Category(1, null));
         categories.add(new Category(2, null));
+
         Film film2 = new Film(1, "spaceRSd", "journey into spaceW",
                 LocalDate.of(1991, 12, 27), 210, mpa, categories,
                 Collections.emptyList());
@@ -152,6 +154,7 @@ class FilmorateApplicationTests {
         assertTrue(ratingMpa.isPresent());
         assertFalse(ratingMpa1.isPresent());
     }
+
     @Test
     public void testLike() {
         User user1 = new User(0, "sdd@mail.ru", "sdd", "asr",
@@ -168,12 +171,14 @@ class FilmorateApplicationTests {
         categories.add(new Category(2, null));
         categories1.add(new Category(1, null));
         categories1.add(new Category(2, null));
+
         Film film1 = new Film(0, "spaceRS", "journey into spaceW",
                 LocalDate.of(1991, 12, 27), 210, mpa, categories,
                 Collections.emptyList());
         Film film2 = new Film(0, "space", "journey into space",
                 LocalDate.of(2002, 12, 23), 220, mpa1, categories1,
                 Collections.emptyList());
+
         userStorage.create(user1);
         userStorage.create(user2);
         userStorage.create(user3);

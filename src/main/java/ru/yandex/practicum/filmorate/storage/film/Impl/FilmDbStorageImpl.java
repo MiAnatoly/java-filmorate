@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -29,6 +28,10 @@ import java.util.stream.Collectors;
 public class FilmDbStorageImpl implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final DirectorStorage directorStorage;
+    private final FilmDirectorStorage filmDirectorStorage;
+
+    private final DirectorStorage directorStorage;
+
     private final FilmDirectorStorage filmDirectorStorage;
 
     @Autowired

@@ -32,5 +32,4 @@ public interface FilmService {
     RatingMpa findByIdMpa(Integer id);
 
     List<Film> findFilmsByDirectorSorted(int directorId, String sortType);
-
 }

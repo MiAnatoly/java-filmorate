@@ -40,4 +40,3 @@ public class DirectorServiceImpl implements DirectorService {
         directorStorage.delete(directorId);
     }
 }
-

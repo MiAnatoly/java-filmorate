@@ -89,6 +89,7 @@ public class CategoryDbStorageImpl implements CategoryStorage {
                             ps.setInt(1, film.getId());
                             ps.setInt(2, categories.get(i).getId());
                         }
+
                         public int getBatchSize() {
                             return categories.size();
                         }
