@@ -2,7 +2,9 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.Exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
+import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Category;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
@@ -11,7 +13,9 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.LikeFilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.MpaStorage;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +35,10 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Film create(Film film) {
-       Film film1 = filmStorage.create(film);
-       categoryStorage.createFilmCategories(film1);
-       film1.setMpa(mpaStorage.findById(film1.getMpa().getId()).orElse(null));
-       return categoryStorage.filmCategories(film1);
+        Film film1 = filmStorage.create(film);
+        categoryStorage.createFilmCategories(film1);
+        film1.setMpa(mpaStorage.findById(film1.getMpa().getId()).orElse(null));
+        return categoryStorage.filmCategories(film1);
     }
     // добавить фильм
 
@@ -53,6 +57,7 @@ public class FilmServiceImpl implements FilmService {
         categoryStorage.deleteFilmCategories(id);
         filmStorage.deleteFilm(id);
     }
+
     // удалить фильм
     @Override
     public Film findById(Integer id) {
@@ -64,7 +69,7 @@ public class FilmServiceImpl implements FilmService {
     public void createLike(Integer id, Integer userId) {
         userService.findById(userId);
         findById(id);
-        likeFilmStorage.createLike(id,userId);
+        likeFilmStorage.createLike(id, userId);
     }
     // пользователь добавляет лайк
 
@@ -72,7 +77,7 @@ public class FilmServiceImpl implements FilmService {
     public void deleteLike(Integer id, Integer userId) {
         userService.findById(userId);
         findById(id);
-        likeFilmStorage.deleteLike(id,userId);
+        likeFilmStorage.deleteLike(id, userId);
     }
     // пользователь удаляет лайк
 
@@ -106,6 +111,28 @@ public class FilmServiceImpl implements FilmService {
         return mpaStorage.findById(id).orElseThrow(() -> new NotObjectException("нет категории"));
     }
     // показать рейтинг по id
+
+    @Override
+    public List<Film> findFilmsByDirectorSorted(int directorId, String sortType) {
+        List<Film> films;
+        switch (sortType) {
+            case "year":
+                films = categoryStorage.allFilmsCategories(filmStorage.filmsByDirectorSortByYear(directorId));
+                films = films.stream().sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
+                if (films.isEmpty()) {
+                    throw new EntityNotFoundException("No films with director id : " + directorId);
+                }
+                return films;
+            case "likes":
+                films = categoryStorage.allFilmsCategories(filmStorage.filmsByDirectorSortByLikes(directorId));
+                if (films.isEmpty()) {
+                    throw new EntityNotFoundException("No films with director id : " + directorId);
+                }
+                return films;
+            default:
+                throw new ValidationException("Wrong sortType expected: {'year', 'likes'} current : " + sortType);
+        }
+    }
 }
 
 

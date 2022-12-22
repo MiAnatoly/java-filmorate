@@ -31,5 +31,5 @@ public class Film {
     @NotNull
     private RatingMpa mpa;
     private List<Category> genres;
-
+    private List<Director> directors;
 }

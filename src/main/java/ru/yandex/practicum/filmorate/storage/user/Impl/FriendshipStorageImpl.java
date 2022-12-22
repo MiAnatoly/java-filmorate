@@ -28,7 +28,7 @@ public class FriendshipStorageImpl implements FriendshipStorage {
         try {
             jdbcTemplate.update(sqlQuery, id, friendId);
         } catch (Throwable ignored) {
-          throw new NotObjectException("Пользователь с идентификатором "+ id +" или "+ friendId +" не найден.");
+            throw new NotObjectException("Пользователь с идентификатором " + id + " или " + friendId + " не найден.");
         }
     } // добавить друга
 
@@ -50,7 +50,7 @@ public class FriendshipStorageImpl implements FriendshipStorage {
         String sql = "SELECT * FROM USERS_FILMS u, FRIENDSHIP f, FRIENDSHIP o " +
                 "WHERE u.USER_ID = f.FRIEND_ID " +
                 "AND u.USER_ID = o.FRIEND_ID " +
-                "AND f.USER_ID = "+ id +" AND o.USER_ID = "+ otherId;
+                "AND f.USER_ID = " + id + " AND o.USER_ID = " + otherId;
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
     } // общие друзья
 

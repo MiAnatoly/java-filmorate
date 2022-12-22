@@ -30,4 +30,6 @@ public interface FilmService {
     List<RatingMpa> findAllMpa();
 
     RatingMpa findByIdMpa(Integer id);
+
+    List<Film> findFilmsByDirectorSorted(int directorId, String sortType);
 }
