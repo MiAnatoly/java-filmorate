@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import ru.yandex.practicum.filmorate.model.Category;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
+import ru.yandex.practicum.filmorate.model.Search;
 
 import java.util.List;
 
@@ -30,4 +31,6 @@ public interface FilmService {
     List<RatingMpa> findAllMpa();
 
     RatingMpa findByIdMpa(Integer id);
+
+    List<Film> searchForFilm(Search search);
 }

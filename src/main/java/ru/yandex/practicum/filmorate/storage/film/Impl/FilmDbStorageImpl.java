@@ -9,8 +9,10 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
+import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
+import ru.yandex.practicum.filmorate.model.Search;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.sql.Date;
@@ -130,4 +132,19 @@ public class FilmDbStorageImpl implements FilmStorage {
         return new Film(id, name, description, releaseDate, duration, mpa, new ArrayList<>());
     } // добавить в фильм данные из БД через SqlRowSet
 
+    @Override
+    public List<Film> searchForFilm(Search search) {
+        if (search.getData().isBlank() || search.getData().isEmpty()) {
+            throw new ValidationException("Invalid search body");
+        }
+        List<Film> all = findAll();
+        List<Film> result = new ArrayList<>();
+        for (Film film : all) {
+            if (film.getDescription().contains(search.getData().toLowerCase()) ||
+                    film.getName().contains(search.getData().toLowerCase())) {
+                result.add(film);
+            }
+        }
+        return result;
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Search;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -77,4 +78,9 @@ public class FilmController {
 
     }
     // воспомогателльный метод проверяет дату релиза
+
+    @GetMapping("/search")
+    public List<Film> searchForFilm(@Valid @RequestBody Search search) {
+        return service.searchForFilm(search);
+    }
 }
