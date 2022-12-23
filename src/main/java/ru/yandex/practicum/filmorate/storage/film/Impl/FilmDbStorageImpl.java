@@ -26,11 +26,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @Repository
 public class FilmDbStorageImpl implements FilmStorage {
-
     private final JdbcTemplate jdbcTemplate;
-
     private final DirectorStorage directorStorage;
-
     private final FilmDirectorStorage filmDirectorStorage;
 
     @Autowired
@@ -107,7 +104,7 @@ public class FilmDbStorageImpl implements FilmStorage {
     } // обновить фильм
 
     @Override
-    public void deleteFilm(int id) {
+    public void delete(int id) {
         String sql =
                 "DELETE " +
                         "FROM FILMS " +
@@ -129,7 +126,7 @@ public class FilmDbStorageImpl implements FilmStorage {
             return Optional.of(film);
         } else log.info("Фильм с идентификатором {} не найден.", id);
         return Optional.empty();
-    } // показать филм по id
+    } // показать фильм по id
 
     @Override
     public List<Film> filmsPopular(Integer count) {

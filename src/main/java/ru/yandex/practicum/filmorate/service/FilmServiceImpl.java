@@ -8,10 +8,7 @@ import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Category;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
-import ru.yandex.practicum.filmorate.storage.film.CategoryStorage;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.LikeFilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.film.*;
 
 import java.util.Comparator;
 import java.util.List;
@@ -55,7 +52,7 @@ public class FilmServiceImpl implements FilmService {
     public void deleteFilm(int id) {
         likeFilmStorage.removeLikesFilm(id);
         categoryStorage.deleteFilmCategories(id);
-        filmStorage.deleteFilm(id);
+        filmStorage.delete(id);
     }
 
     // удалить фильм
