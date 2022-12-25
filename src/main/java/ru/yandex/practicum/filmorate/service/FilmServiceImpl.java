@@ -5,10 +5,9 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.Exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Category;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.film.*;
+import ru.yandex.practicum.filmorate.storage.user.EventStorage;
 
 import java.util.Comparator;
 import java.util.List;
@@ -23,6 +22,7 @@ public class FilmServiceImpl implements FilmService {
     private final CategoryStorage categoryStorage;
     private final MpaStorage mpaStorage;
     private final LikeFilmStorage likeFilmStorage;
+    private final EventStorage eventStorage;
 
     @Override
     public List<Film> findAll() {
@@ -67,6 +67,7 @@ public class FilmServiceImpl implements FilmService {
         userService.findById(userId);
         findById(id);
         likeFilmStorage.createLike(id, userId);
+        eventStorage.create(userId, EventType.LIKE, Operation.ADD, id);
     }
     // пользователь добавляет лайк
 
@@ -75,6 +76,7 @@ public class FilmServiceImpl implements FilmService {
         userService.findById(userId);
         findById(id);
         likeFilmStorage.deleteLike(id, userId);
+        eventStorage.create(userId, EventType.LIKE, Operation.REMOVE, id);
     }
     // пользователь удаляет лайк
 
@@ -130,6 +132,7 @@ public class FilmServiceImpl implements FilmService {
                 throw new ValidationException("Wrong sortType expected: {'year', 'likes'} current : " + sortType);
         }
     }
+
 }
 
 

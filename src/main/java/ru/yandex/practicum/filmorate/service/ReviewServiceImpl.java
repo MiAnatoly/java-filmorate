@@ -3,9 +3,12 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.film.LikeReviewStorage;
 import ru.yandex.practicum.filmorate.storage.film.ReviewStorage;
+import ru.yandex.practicum.filmorate.storage.user.EventStorage;
 
 import java.util.List;
 
@@ -14,20 +17,27 @@ import java.util.List;
 public class ReviewServiceImpl implements ReviewService {
     private final ReviewStorage reviewStorage;
     private final LikeReviewStorage likeReviewStorage;
+    private final EventStorage eventStorage;
 
     @Override
     public Review create(Review review) {
-        return reviewStorage.create(review);
+        Review review1 = reviewStorage.create(review);
+        eventStorage.create(review1.getUserId(), EventType.REVIEW, Operation.ADD, review1.getReviewId());
+        return review1;
     }
 
     @Override
     public Review update(Review review) {
-        return reviewStorage.update(review).orElseThrow(() -> new NotObjectException("нет отзыва"));
+        Review review1 = reviewStorage.update(review).orElseThrow(() -> new NotObjectException("нет отзыва"));
+        eventStorage.create(review1.getUserId(), EventType.REVIEW, Operation.UPDATE, review1.getReviewId());
+        return review1;
     } // Редактирование уже имеющегося отзыва.
 
     @Override
     public void delete(Integer id) {
+        Review review1 = findById(id);
         reviewStorage.delete(id);
+        eventStorage.create(review1.getUserId(), EventType.REVIEW, Operation.REMOVE, review1.getReviewId());
     } // Удаление уже имеющегося отзыва.
 
     @Override
