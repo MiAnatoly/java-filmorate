@@ -58,7 +58,8 @@ public class FilmServiceImpl implements FilmService {
     // удалить фильм
     @Override
     public Film findById(Integer id) {
-        return categoryStorage.filmCategories(filmStorage.findById(id).orElseThrow(() -> new NotObjectException("нет фильма")));
+        return categoryStorage.filmCategories(filmStorage.findById(id)
+                .orElseThrow(() -> new NotObjectException("нет фильма")));
     }
     // поиск фильма по id
 
