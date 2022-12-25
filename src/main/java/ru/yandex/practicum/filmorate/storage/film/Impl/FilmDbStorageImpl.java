@@ -235,7 +235,7 @@ public class FilmDbStorageImpl implements FilmStorage {
             films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), likeStr);
         setDirectors(films);
         return films;
-    }
+    } // найти фильмы по подстроке в наименовании фильма и в имени режиссера
 
     private Film makeFilm(ResultSet rs) throws SQLException {
         int id = rs.getInt("FILM_ID");
@@ -258,5 +258,4 @@ public class FilmDbStorageImpl implements FilmStorage {
         RatingMpa mpa = new RatingMpa(filmRows.getInt("RATING_ID"), filmRows.getString("RATING"));
         return new Film(id, name, description, releaseDate, duration, mpa, new ArrayList<>(), new ArrayList<>());
     } // добавить в фильм данные из БД через SqlRowSet
-
 }
