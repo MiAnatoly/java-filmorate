@@ -81,7 +81,9 @@ public class CategoryDbStorageImpl implements CategoryStorage {
                         "WHERE FILM_ID IN (%s) " +
                         " ORDER BY FILM_ID", inSql),
                 filmsMap.keySet().toArray(),
-                (rs, rowNum) -> filmsMap.get(rs.getInt("FILM_ID")).getGenres().add(new Category(rs.getInt("CATEGORY_ID"), rs.getString("CATEGORY"))));
+                (rs, rowNum) -> filmsMap.get(rs.getInt("FILM_ID"))
+                        .getGenres()
+                        .add( new Category(rs.getInt("CATEGORY_ID"), rs.getString("CATEGORY"))));
         return new ArrayList<>(filmsMap.values());
     }// вернуть категории фильмов
 
