@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -27,19 +28,19 @@ public class UserServiceImpl implements UserService {
     private final FriendshipStorage friendshipStorage;
     private final LikeFilmStorage likeFilmStorage;
     private final EventStorage eventStorage;
-
     private final UserBasedRating userBasedRating;
-
     private final FilmStorage filmStorage;
 
     @Autowired
     public UserServiceImpl(UserStorage userStorage, FriendshipStorage friendshipStorage
-            , LikeFilmStorage likeFilmStorage, UserBasedRating userBasedRating, FilmStorage filmStorage) {
+            , LikeFilmStorage likeFilmStorage, UserBasedRating userBasedRating,
+                           FilmStorage filmStorage, EventStorage eventStorage) {
         this.userStorage = userStorage;
         this.friendshipStorage = friendshipStorage;
         this.likeFilmStorage = likeFilmStorage;
         this.userBasedRating = userBasedRating;
         this.filmStorage = filmStorage;
+        this.eventStorage = eventStorage;
     }
 
     @Override
