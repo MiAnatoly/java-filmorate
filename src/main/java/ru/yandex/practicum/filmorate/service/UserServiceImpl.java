@@ -1,13 +1,17 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.recommendation.UserBasedRating;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.LikeFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.EventStorage;
 import ru.yandex.practicum.filmorate.storage.user.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -16,11 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserStorage userStorage;
     private final FriendshipStorage friendshipStorage;
     private final LikeFilmStorage likeFilmStorage;
+    private final EventStorage eventStorage;
 
     private final UserBasedRating userBasedRating;
 
@@ -69,12 +75,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createFriend(Integer friendId, Integer id) {
         friendshipStorage.createFriend(friendId, id);
+        eventStorage.create(id, EventType.FRIEND, Operation.ADD, friendId);
     }
     // добавить друга
 
     @Override
     public void deleteFriend(Integer friendId, Integer id) {
         friendshipStorage.deleteFriend(friendId, id);
+        eventStorage.create(id, EventType.FRIEND, Operation.REMOVE, friendId);
     }
     // удалить друга
 
@@ -93,6 +101,14 @@ public class UserServiceImpl implements UserService {
         return friendshipStorage.findOtherFriends(otherId, id);
     }
     // показать общих друзей
+
+    @Override
+    public List<Event> findAllEvent(Integer id) {
+      List<Event> events = eventStorage.findAllEvent(id);
+      if(events.isEmpty())
+          findById(id);
+      return events;
+    }
 
     @Override
     public List<Film> findRecommendations(int userId) {

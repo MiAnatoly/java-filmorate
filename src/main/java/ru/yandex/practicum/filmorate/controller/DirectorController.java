@@ -49,3 +49,4 @@ public class DirectorController {
         directorService.delete(directorId);
     }
 }
+
