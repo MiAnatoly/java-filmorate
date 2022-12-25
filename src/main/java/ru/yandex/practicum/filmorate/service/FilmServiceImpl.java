@@ -112,6 +112,12 @@ public class FilmServiceImpl implements FilmService {
     // показать рейтинг по id
 
     @Override
+    public List<Film> getFilmsByParams(String query, List<String> by) {
+        return categoryStorage.allFilmsCategories(filmStorage.getFilmsByQuery(query, by));
+    }
+    // найти фильмы по названию с сортировкой по имени и режиссеру
+
+    @Override
     public List<Film> findFilmsByDirectorSorted(int directorId, String sortType) {
         List<Film> films;
         switch (sortType) {

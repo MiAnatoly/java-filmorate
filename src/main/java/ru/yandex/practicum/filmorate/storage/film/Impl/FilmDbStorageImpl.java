@@ -169,6 +169,34 @@ public class FilmDbStorageImpl implements FilmStorage {
         return films;
     }
 
+    @Override
+    public List<Film> getFilmsByQuery(String query, List<String> byParams) {
+        if (query.isEmpty() && byParams.isEmpty()) {
+            return filmsPopular(10);
+        }
+        String likeStr = "%" + query + "%";
+        StringBuilder inSql = new StringBuilder();
+        StringBuilder orderSql = new StringBuilder();
+        if (byParams.contains("director") && byParams.contains("title")) {
+            inSql.append(" fd.DIRECTOR_ID IS NOT NULL OR");
+            orderSql.append(" COUNT(fd.DIRECTOR_ID) DESC,");
+        }
+        if (byParams.contains("title")) {
+            orderSql.append("f.name,");
+        }
+        String sql = "SELECT f.name AS title, fd.DIRECTOR_ID AS director, f.*, rm.RATING " +
+                "FROM FILMS AS f " +
+                "LEFT OUTER JOIN like_film AS lf ON f.FILM_ID = lf.FILM_ID " +
+                "LEFT OUTER JOIN RATING_MPA rm on f.RATING_ID = rm.RATING_ID " +
+                "LEFT OUTER JOIN FILM_DIRECTOR fd on f.FILM_ID = fd.FILM_ID " +
+                "WHERE " + inSql + " f.name ILIKE ? " +
+                "GROUP BY f.FILM_ID " +
+                "ORDER BY " + orderSql + "count(lf.USER_ID) desc";
+        List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), likeStr);
+        setDirectors(films);
+        return films;
+    }
+
     private Film makeFilm(ResultSet rs) throws SQLException {
         int id = rs.getInt("FILM_ID");
         String name = rs.getString("NAME");
