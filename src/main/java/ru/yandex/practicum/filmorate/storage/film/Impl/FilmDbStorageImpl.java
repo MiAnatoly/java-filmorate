@@ -3,14 +3,19 @@ package ru.yandex.practicum.filmorate.storage.film.Impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
+import ru.yandex.practicum.filmorate.model.Category;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
+import ru.yandex.practicum.filmorate.storage.film.CategoryStorage;
 import ru.yandex.practicum.filmorate.storage.film.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -29,16 +34,23 @@ public class FilmDbStorageImpl implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private final DirectorStorage directorStorage;
 
     private final FilmDirectorStorage filmDirectorStorage;
 
+    private final CategoryStorage categoryStorage;
+
     @Autowired
     public FilmDbStorageImpl(JdbcTemplate jdbcTemplate, DirectorStorage directorStorage,
-                             FilmDirectorStorage filmDirectorStorage) {
+                             FilmDirectorStorage filmDirectorStorage, CategoryStorage categoryStorage,
+                             NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.directorStorage = directorStorage;
         this.filmDirectorStorage = filmDirectorStorage;
+        this.categoryStorage = categoryStorage;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     @Override
@@ -170,6 +182,27 @@ public class FilmDbStorageImpl implements FilmStorage {
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), directorId);
         setDirectors(films);
         return films;
+    }
+
+    @Override
+    public List<Film> findByIds(List<Integer> ids) {
+        String sql = "select f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, " +
+                "f.DURATION, f.RATING_ID, m.RATING from FILMS f left join RATING_MPA m " +
+                "on f.RATING_ID = m.RATING_ID where f.FILM_ID in (:filmIds)";
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("filmIds", ids);
+        List<Film> films = namedParameterJdbcTemplate.query(sql, namedParameters, (rs, rowNum) -> makeFilm(rs));
+        setFilmGenre(films);
+        setDirectors(films);
+        return films;
+    }
+
+    private void setFilmGenre(List<Film> films) {
+        List<Integer> filmIds = films.stream().map(Film::getId).collect(Collectors.toList());
+        Map<Integer, List<Category>> filmGenres = categoryStorage.filmsCategories(filmIds);
+        films.forEach(f -> f.setGenres(
+                filmGenres.getOrDefault(f.getId(), Collections.emptyList()))
+        );
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
