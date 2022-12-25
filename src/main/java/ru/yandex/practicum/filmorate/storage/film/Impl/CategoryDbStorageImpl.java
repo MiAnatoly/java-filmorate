@@ -64,7 +64,7 @@ public class CategoryDbStorageImpl implements CategoryStorage {
         }
         Map<Integer, Film> filmsMap = films.stream().collect(Collectors.toMap(
                 Film::getId, Function.identity(),
-                (e1, e2) -> e1, HashMap::new));
+                (e1, e2) -> e1, LinkedHashMap::new));
 
         String inSql = String.join(",", Collections.nCopies(filmsMap.size(), "?"));
         jdbcTemplate.query(
