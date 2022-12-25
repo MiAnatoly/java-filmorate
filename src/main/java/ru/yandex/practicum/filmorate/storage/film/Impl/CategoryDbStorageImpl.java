@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Category;
@@ -11,6 +14,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.CategoryStorage;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Function;
@@ -22,9 +26,13 @@ public class CategoryDbStorageImpl implements CategoryStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     @Autowired
-    public CategoryDbStorageImpl(JdbcTemplate jdbcTemplate) {
+    public CategoryDbStorageImpl(JdbcTemplate jdbcTemplate,
+                                 NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     @Override
@@ -76,6 +84,29 @@ public class CategoryDbStorageImpl implements CategoryStorage {
                 (rs, rowNum) -> filmsMap.get(rs.getInt("FILM_ID")).getGenres().add(new Category(rs.getInt("CATEGORY_ID"), rs.getString("CATEGORY"))));
         return new ArrayList<>(filmsMap.values());
     }// вернуть категории фильмов
+
+    @Override
+    public Map<Integer, List<Category>> filmsCategories(List<Integer> filmIds) {
+        String sql = "select fc.FILM_ID, c.CATEGORY_ID, c.CATEGORY " +
+                "from FILM_CATEGORY fc, CATEGORY c " +
+                "where fc.CATEGORY_ID = c.CATEGORY_ID and fc.FILM_ID in (:filmIds) " +
+                "group by fc.FILM_ID, c.CATEGORY_ID";
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("filmIds", filmIds);
+        List<Map<String, Object>> filmsCategories = namedParameterJdbcTemplate.query(sql, namedParameters,
+                this::mapCategory);
+        return filmsCategories.stream().collect(Collectors.groupingBy(m -> (Integer) m.get("filmId"),
+                Collectors.mapping(m -> new Category((Integer) m.get("categoryId"), (String) m.get("categoryName")),
+                        Collectors.toList())));
+    }
+
+    private Map<String, Object> mapCategory(ResultSet rs, int rowNum) throws SQLException {
+        int filmId = rs.getInt("FILM_ID");
+        int categoryId = rs.getInt("CATEGORY_ID");
+        String categoryName = rs.getString("CATEGORY");
+        return Map.ofEntries(Map.entry("filmId", filmId), Map.entry("categoryId", categoryId),
+                Map.entry("categoryName", categoryName));
+    }
 
     @Override
     public void createFilmCategories(Film film) {

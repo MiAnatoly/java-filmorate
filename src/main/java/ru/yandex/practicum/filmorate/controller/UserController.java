@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -84,4 +85,9 @@ public class UserController {
 
     }
     // воспомогательный метод проверяет наличие имени и в слючае отсутствия копируется из логина
+
+    @GetMapping("/{userId}/recommendations")
+    public List<Film> recommendation(@PathVariable Integer userId) {
+        return service.findRecommendations(userId);
+    }
 }

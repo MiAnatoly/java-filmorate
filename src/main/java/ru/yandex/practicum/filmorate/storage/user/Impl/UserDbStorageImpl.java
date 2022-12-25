@@ -17,8 +17,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -92,6 +94,27 @@ public class UserDbStorageImpl implements UserStorage {
         } else log.info("Фильм с идентификатором {} не найден.", id);
         return Optional.empty();
     } // найти пользователя по id
+
+    @Override
+    public Map<Integer, Map<Integer, Boolean>> findAllUserFilmLike() {
+        String sql = "select uf.USER_ID, f.FILM_ID, lf.FILM_ID as IS_LIKED " +
+                "from USERS_FILMS as uf " +
+                "cross join FILMS as f " +
+                "left join LIKE_FILM as lf on f.FILM_ID = lf.FILM_ID and uf.USER_ID = lf.USER_ID";
+        List<Map<String, Object>> data = jdbcTemplate.query(sql, this::mapUserFilmLike);
+        return data.stream().collect(Collectors.groupingBy(m -> (Integer) m.get("userId"),
+                Collectors.toMap(m -> (Integer) m.get("filmId"),
+                        m -> (Boolean) m.get("isLiked"))));
+    }
+
+    private Map<String, Object> mapUserFilmLike(ResultSet rs, int rowNum) throws SQLException {
+        Integer userId = rs.getInt("USER_ID");
+        Integer filmId = rs.getInt("FILM_ID");
+        Boolean isLiked = rs.getBoolean("IS_LIKED");
+        return Map.ofEntries(Map.entry("userId", userId),
+                Map.entry("filmId", filmId),
+                Map.entry("isLiked", isLiked));
+    }
 
     private User makeUser(ResultSet rs) throws SQLException {
         int id = rs.getInt("USER_ID");
