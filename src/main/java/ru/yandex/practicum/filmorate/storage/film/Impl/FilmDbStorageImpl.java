@@ -209,24 +209,30 @@ public class FilmDbStorageImpl implements FilmStorage {
             return filmsPopular(10);
         }
         String likeStr = "%" + query + "%";
-        StringBuilder inSql = new StringBuilder();
-        StringBuilder orderSql = new StringBuilder();
+        StringBuilder resSql = new StringBuilder();
+        boolean isTwo = false;
         if (byParams.contains("director") && byParams.contains("title")) {
-            inSql.append(" fd.DIRECTOR_ID IS NOT NULL OR");
-            orderSql.append(" COUNT(fd.DIRECTOR_ID) DESC,");
+            resSql.append("df.DIRECTOR_NAME ILIKE ? OR f.NAME ILIKE ?");
+            isTwo = true;
+        } else if (byParams.contains("title")) {
+            resSql.append("f.NAME ILIKE ?");
+        } else if (byParams.contains("director")) {
+            resSql.append("df.DIRECTOR_NAME ILIKE ?");
         }
-        if (byParams.contains("title")) {
-            orderSql.append("f.name,");
-        }
-        String sql = "SELECT f.name AS title, fd.DIRECTOR_ID AS director, f.*, rm.RATING " +
+        String sql = "SELECT f.*, rm.RATING, count(lf.USER_ID) AS mas " +
                 "FROM FILMS AS f " +
-                "LEFT OUTER JOIN like_film AS lf ON f.FILM_ID = lf.FILM_ID " +
-                "LEFT OUTER JOIN RATING_MPA rm on f.RATING_ID = rm.RATING_ID " +
-                "LEFT OUTER JOIN FILM_DIRECTOR fd on f.FILM_ID = fd.FILM_ID " +
-                "WHERE " + inSql + " f.name ILIKE ? " +
-                "GROUP BY f.FILM_ID " +
-                "ORDER BY " + orderSql + "count(lf.USER_ID) desc";
-        List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), likeStr);
+                "LEFT JOIN like_film AS lf ON f.FILM_ID = lf.FILM_ID " +
+                "LEFT JOIN RATING_MPA rm on f.RATING_ID = rm.RATING_ID " +
+                "LEFT JOIN (SELECT fd.FILM_ID, d.DIRECTOR_NAME FROM FILM_DIRECTOR fd " +
+                "LEFT JOIN DIRECTORS d on fd.DIRECTOR_ID = d.DIRECTOR_ID) AS df on f.FILM_ID = df.FILM_ID " +
+                "WHERE " + resSql +
+                " GROUP BY f.FILM_ID " +
+                "ORDER BY count(lf.USER_ID) desc, f.FILM_ID desc";
+        List<Film> films;
+        if (isTwo)
+            films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), likeStr, likeStr);
+        else
+            films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), likeStr);
         setDirectors(films);
         return films;
     }
