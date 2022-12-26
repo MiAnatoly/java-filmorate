@@ -311,7 +311,6 @@ public class FilmDbStorageImpl implements FilmStorage {
                 "LEFT JOIN RATING_MPA m ON FILMS.RATING_ID = m.RATING_ID " +
                 "WHERE FILMS.FILM_ID IN (SELECT FILM_ID FROM LIKE_FILM WHERE USER_ID = ? AND FILM_ID IN " +
                 "(SELECT FILM_ID FROM LIKE_FILM WHERE USER_ID = ?))";
-        List<Film> result = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), userId, friendId);
-        return result;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), userId, friendId);
     }
 }
