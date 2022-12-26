@@ -40,4 +40,6 @@ public interface FilmService {
     List<Film> getPopularFilmsByYear(Integer year, Integer limit);
 
     List<Film> getPopularFilmsByGenreAndYear(Integer genreId, Integer year, Integer limit);
+
+    List<Film> getCommonFilms(int userId, int friendId);
 }
