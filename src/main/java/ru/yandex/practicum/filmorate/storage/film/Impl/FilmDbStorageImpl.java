@@ -258,4 +258,50 @@ public class FilmDbStorageImpl implements FilmStorage {
         RatingMpa mpa = new RatingMpa(filmRows.getInt("RATING_ID"), filmRows.getString("RATING"));
         return new Film(id, name, description, releaseDate, duration, mpa, new ArrayList<>(), new ArrayList<>());
     } // добавить в фильм данные из БД через SqlRowSet
+
+    public List<Film> findPopularFilmsByGenre(Integer genreId, Integer limit) {
+        final String sql = "SELECT * " +
+                "FROM FILMS " +
+                "LEFT JOIN LIKE_FILM lf ON FILMS.FILM_ID = lf.FILM_ID " +
+                "LEFT JOIN RATING_MPA m ON FILMS.RATING_ID = m.RATING_ID " +
+                "LEFT JOIN FILM_CATEGORY fc ON FILMS.FILM_ID = fc.FILM_ID " +
+                "LEFT JOIN CATEGORY c ON fc.CATEGORY_ID = c.CATEGORY_ID " +
+                "WHERE c.CATEGORY_ID = ? " +
+                "GROUP BY FILMS.FILM_ID, lf.FILM_ID " +
+                "ORDER BY COUNT(lf.FILM_ID) DESC LIMIT ?";
+        List<Film> films = jdbcTemplate.query(sql,(rs, rowNum) -> makeFilm(rs), genreId, limit);
+        setFilmGenre(films);
+        setDirectors(films);
+        return films;
+    }
+
+    public List<Film> findPopularFilmsByYear(Integer year, Integer limit) {
+        final String sql = "SELECT * " +
+                "FROM FILMS " +
+                "LEFT JOIN LIKE_FILM lf ON FILMS.FILM_ID = lf.FILM_ID " +
+                "LEFT JOIN RATING_MPA m ON FILMS.RATING_ID = m.RATING_ID " +
+                "WHERE EXTRACT(YEAR FROM RELEASE_DATE) = ? " +
+                "GROUP BY FILMS.FILM_ID, lf.FILM_ID " +
+                "ORDER BY COUNT(lf.FILM_ID) DESC LIMIT ?";
+        List<Film> films = jdbcTemplate.query(sql,(rs, rowNum) -> makeFilm(rs), year, limit);
+        setFilmGenre(films);
+        setDirectors(films);
+        return films;
+    }
+
+    public List<Film> findPopularFilmsByGenreAndYear( Integer genreId, Integer year, Integer limit) {
+        final String sql = "SELECT * " +
+                "FROM FILMS " +
+                "LEFT JOIN LIKE_FILM lf ON FILMS.FILM_ID = lf.FILM_ID " +
+                "LEFT JOIN RATING_MPA m ON FILMS.RATING_ID = m.RATING_ID " +
+                "LEFT JOIN FILM_CATEGORY fc ON FILMS.FILM_ID = fc.FILM_ID " +
+                "LEFT JOIN CATEGORY c ON fc.CATEGORY_ID = c.CATEGORY_ID " +
+                "WHERE EXTRACT(YEAR FROM RELEASE_DATE) = ? AND c.CATEGORY_ID = ? " +
+                "GROUP BY FILMS.FILM_ID, lf.FILM_ID " +
+                "ORDER BY COUNT(lf.FILM_ID) DESC LIMIT ?";
+        List<Film> films = jdbcTemplate.query(sql,(rs, rowNum) -> makeFilm(rs), year, genreId, limit);
+        setFilmGenre(films);
+        setDirectors(films);
+        return films;
+    }
 }

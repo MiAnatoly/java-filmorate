@@ -26,4 +26,10 @@ public interface FilmStorage {
     List<Film> filmsByDirectorSortByYear(int directorId);
 
     List<Film> findByIds(List<Integer> ids);
+
+    List<Film> findPopularFilmsByGenre( Integer genreId, Integer limit);
+
+    List<Film> findPopularFilmsByYear( Integer genreId, Integer limit);
+
+    List<Film> findPopularFilmsByGenreAndYear(Integer genreId, Integer year, Integer limit);
 }

@@ -74,6 +74,25 @@ public class FilmController {
         return service.findFilmsByDirectorSorted(directorId, sortBy);
     }
 
+    @GetMapping(value = "/popular", params = {"genreId"})
+    public List<Film> getPopularFilmsByGenre(@RequestParam Integer genreId,
+                                             @RequestParam(defaultValue = "10") Integer limit) {
+        return service.getPopularFilmsByGenre(genreId, limit);
+    }
+
+    @GetMapping(value = "/popular", params = {"year"})
+    public List<Film> getPopularFilmsByYear(@RequestParam Integer year,
+                                            @RequestParam(defaultValue = "10") Integer limit) {
+        return service.getPopularFilmsByYear(year, limit);
+    }
+
+    @GetMapping(value = "/popular", params = {"genreId", "year"})
+    public List<Film> getPopularFilmsByGenreAndYear(@RequestParam Integer genreId,
+                                                    @RequestParam Integer year,
+                                                    @RequestParam(defaultValue = "10") Integer limit) {
+        return service.getPopularFilmsByGenreAndYear(genreId, year, limit);
+    }
+
     @GetMapping("/search")
     public List<Film> getFilmsByParams(@RequestParam(defaultValue = "", required = false) String query,
                                        @RequestParam(required = false) List<String> by) {
@@ -83,7 +102,6 @@ public class FilmController {
     void validate(Film film) {
         if (film.getReleaseDate().isBefore(LIMIT_DATA))
             throw new ValidationException("Дата релиза не может быть раньше " + LIMIT_DATA);
-
     }
     // воспомогателльный метод проверяет дату релиза
 }
