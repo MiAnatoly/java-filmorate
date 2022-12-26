@@ -87,6 +87,11 @@ public class FilmController {
     @GetMapping(value = "/popular", params = {"genreId", "year"})
     public List<Film> getPopularFilmsByGenreAndYear(@RequestParam Integer genreId, @RequestParam Integer year, @RequestParam(defaultValue = "10") Integer limit) {
         return service.getPopularFilmsByGenreAndYear(genreId, year, limit);
+
+    @GetMapping("/search")
+    public List<Film> getFilmsByParams(@RequestParam(defaultValue = "", required = false) String query,
+                                       @RequestParam(required = false) List<String> by) {
+        return service.getFilmsByParams(query, by);
     }
 
     void validate(Film film) {

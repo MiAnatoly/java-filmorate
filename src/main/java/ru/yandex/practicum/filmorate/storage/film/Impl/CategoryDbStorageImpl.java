@@ -72,7 +72,7 @@ public class CategoryDbStorageImpl implements CategoryStorage {
         }
         Map<Integer, Film> filmsMap = films.stream().collect(Collectors.toMap(
                 Film::getId, Function.identity(),
-                (e1, e2) -> e1, HashMap::new));
+                (e1, e2) -> e1, LinkedHashMap::new));
 
         String inSql = String.join(",", Collections.nCopies(filmsMap.size(), "?"));
         jdbcTemplate.query(
@@ -81,7 +81,9 @@ public class CategoryDbStorageImpl implements CategoryStorage {
                         "WHERE FILM_ID IN (%s) " +
                         " ORDER BY FILM_ID", inSql),
                 filmsMap.keySet().toArray(),
-                (rs, rowNum) -> filmsMap.get(rs.getInt("FILM_ID")).getGenres().add(new Category(rs.getInt("CATEGORY_ID"), rs.getString("CATEGORY"))));
+                (rs, rowNum) -> filmsMap.get(rs.getInt("FILM_ID"))
+                        .getGenres()
+                        .add( new Category(rs.getInt("CATEGORY_ID"), rs.getString("CATEGORY"))));
         return new ArrayList<>(filmsMap.values());
     }// вернуть категории фильмов
 
