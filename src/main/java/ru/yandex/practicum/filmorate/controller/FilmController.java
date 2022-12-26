@@ -104,4 +104,9 @@ public class FilmController {
             throw new ValidationException("Дата релиза не может быть раньше " + LIMIT_DATA);
     }
     // воспомогателльный метод проверяет дату релиза
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
+        return service.getCommonFilms(userId, friendId);
+    }
 }

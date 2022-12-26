@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.filmorate.model.Category;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
@@ -40,4 +41,6 @@ public interface FilmService {
     List<Film> getPopularFilmsByYear(Integer year, Integer limit);
 
     List<Film> getPopularFilmsByGenreAndYear(Integer genreId, Integer year, Integer limit);
+
+    List<Film> getCommonFilms(int userId, int friendId);
 }
