@@ -74,6 +74,12 @@ public class FilmController {
         return service.findFilmsByDirectorSorted(directorId, sortBy);
     }
 
+    @GetMapping("/search")
+    public List<Film> getFilmsByParams(@RequestParam(defaultValue = "", required = false) String query,
+                                       @RequestParam(required = false) List<String> by) {
+        return service.getFilmsByParams(query, by);
+    }
+
     void validate(Film film) {
         if (film.getReleaseDate().isBefore(LIMIT_DATA))
             throw new ValidationException("Дата релиза не может быть раньше " + LIMIT_DATA);

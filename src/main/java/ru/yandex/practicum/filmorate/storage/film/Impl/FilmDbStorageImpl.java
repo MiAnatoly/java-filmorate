@@ -203,6 +203,40 @@ public class FilmDbStorageImpl implements FilmStorage {
         );
     }
 
+    @Override
+    public List<Film> getFilmsByQuery(String query, List<String> byParams) {
+        if (query.isEmpty() && byParams.isEmpty()) {
+            return filmsPopular(10);
+        }
+        String likeStr = "%" + query + "%";
+        StringBuilder resSql = new StringBuilder();
+        boolean isTwo = false;
+        if (byParams.contains("director") && byParams.contains("title")) {
+            resSql.append("df.DIRECTOR_NAME ILIKE ? OR f.NAME ILIKE ?");
+            isTwo = true;
+        } else if (byParams.contains("title")) {
+            resSql.append("f.NAME ILIKE ?");
+        } else if (byParams.contains("director")) {
+            resSql.append("df.DIRECTOR_NAME ILIKE ?");
+        }
+        String sql = "SELECT f.*, rm.RATING, count(lf.USER_ID) AS mas " +
+                "FROM FILMS AS f " +
+                "LEFT JOIN like_film AS lf ON f.FILM_ID = lf.FILM_ID " +
+                "LEFT JOIN RATING_MPA rm on f.RATING_ID = rm.RATING_ID " +
+                "LEFT JOIN (SELECT fd.FILM_ID, d.DIRECTOR_NAME FROM FILM_DIRECTOR fd " +
+                "LEFT JOIN DIRECTORS d on fd.DIRECTOR_ID = d.DIRECTOR_ID) AS df on f.FILM_ID = df.FILM_ID " +
+                "WHERE " + resSql +
+                " GROUP BY f.FILM_ID " +
+                "ORDER BY count(lf.USER_ID) desc, f.FILM_ID desc";
+        List<Film> films;
+        if (isTwo)
+            films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), likeStr, likeStr);
+        else
+            films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), likeStr);
+        setDirectors(films);
+        return films;
+    } // найти фильмы по подстроке в наименовании фильма и в имени режиссера
+
     private Film makeFilm(ResultSet rs) throws SQLException {
         int id = rs.getInt("FILM_ID");
         String name = rs.getString("NAME");
@@ -224,5 +258,4 @@ public class FilmDbStorageImpl implements FilmStorage {
         RatingMpa mpa = new RatingMpa(filmRows.getInt("RATING_ID"), filmRows.getString("RATING"));
         return new Film(id, name, description, releaseDate, duration, mpa, new ArrayList<>(), new ArrayList<>());
     } // добавить в фильм данные из БД через SqlRowSet
-
 }
