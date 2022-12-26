@@ -32,4 +32,10 @@ public interface FilmService {
     RatingMpa findByIdMpa(Integer id);
 
     List<Film> findFilmsByDirectorSorted(int directorId, String sortType);
+
+    List<Film> getPopularFilmsByGenre(Integer genreId, Integer limit);
+
+    List<Film> getPopularFilmsByYear(Integer year, Integer limit);
+
+    List<Film> getPopularFilmsByGenreAndYear(Integer genreId, Integer year, Integer limit);
 }
