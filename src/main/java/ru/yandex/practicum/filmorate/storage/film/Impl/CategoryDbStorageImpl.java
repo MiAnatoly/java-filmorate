@@ -83,7 +83,7 @@ public class CategoryDbStorageImpl implements CategoryStorage {
                 filmsMap.keySet().toArray(),
                 (rs, rowNum) -> filmsMap.get(rs.getInt("FILM_ID"))
                         .getGenres()
-                        .add( new Category(rs.getInt("CATEGORY_ID"), rs.getString("CATEGORY"))));
+                        .add(new Category(rs.getInt("CATEGORY_ID"), rs.getString("CATEGORY"))));
         return new ArrayList<>(filmsMap.values());
     }// вернуть категории фильмов
 

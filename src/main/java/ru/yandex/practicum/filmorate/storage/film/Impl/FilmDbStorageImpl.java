@@ -205,37 +205,61 @@ public class FilmDbStorageImpl implements FilmStorage {
 
     @Override
     public List<Film> getFilmsByQuery(String query, List<String> byParams) {
+        List<Film> films;
         if (query.isEmpty() && byParams.isEmpty()) {
             return filmsPopular(10);
         }
-        String likeStr = "%" + query + "%";
-        StringBuilder resSql = new StringBuilder();
-        boolean isTwo = false;
+        query = "%" + query + "%";
         if (byParams.contains("director") && byParams.contains("title")) {
-            resSql.append("df.DIRECTOR_NAME ILIKE ? OR f.NAME ILIKE ?");
-            isTwo = true;
-        } else if (byParams.contains("title")) {
-            resSql.append("f.NAME ILIKE ?");
+            films = getPopularFilmsByDirectorAndTitle(query);
         } else if (byParams.contains("director")) {
-            resSql.append("df.DIRECTOR_NAME ILIKE ?");
+            films = getPopularFilmsByDirector(query);
+        } else if (byParams.contains("title")) {
+            films = getPopularFilmsByTitle(query);
+        } else {
+            films = Collections.emptyList();
         }
-        String sql = "SELECT f.*, rm.RATING, count(lf.USER_ID) AS mas " +
-                "FROM FILMS AS f " +
-                "LEFT JOIN like_film AS lf ON f.FILM_ID = lf.FILM_ID " +
-                "LEFT JOIN RATING_MPA rm on f.RATING_ID = rm.RATING_ID " +
-                "LEFT JOIN (SELECT fd.FILM_ID, d.DIRECTOR_NAME FROM FILM_DIRECTOR fd " +
-                "LEFT JOIN DIRECTORS d on fd.DIRECTOR_ID = d.DIRECTOR_ID) AS df on f.FILM_ID = df.FILM_ID " +
-                "WHERE " + resSql +
-                " GROUP BY f.FILM_ID " +
-                "ORDER BY count(lf.USER_ID) desc, f.FILM_ID desc";
-        List<Film> films;
-        if (isTwo)
-            films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), likeStr, likeStr);
-        else
-            films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), likeStr);
+        setFilmGenre(films);
         setDirectors(films);
         return films;
-    } // найти фильмы по подстроке в наименовании фильма и в имени режиссера
+    }
+
+    private List<Film> getPopularFilmsByDirector(String query) {
+        String sql = "select f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, f.RATING_ID, m.RATING " +
+                "from FILMS f " +
+                "left join RATING_MPA m on f.RATING_ID = m.RATING_ID " +
+                "left join LIKE_FILM l on f.FILM_ID = l.FILM_ID " +
+                "where f.FILM_ID in (select fd.FILM_ID " +
+                "from FILM_DIRECTOR fd, DIRECTORS d " +
+                "where fd.DIRECTOR_ID = d.DIRECTOR_ID and d.DIRECTOR_NAME ilike ?) " +
+                "group by f.FILM_ID " +
+                "order by count(l.USER_ID) desc";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), query);
+    }
+
+    private List<Film> getPopularFilmsByTitle(String query) {
+        String sql = "select f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, f.RATING_ID, m.RATING " +
+                "from FILMS f " +
+                "left join RATING_MPA m on f.RATING_ID = m.RATING_ID " +
+                "left join LIKE_FILM l on f.FILM_ID = l.FILM_ID " +
+                "where f.NAME ilike ? " +
+                "group by f.FILM_ID " +
+                "order by count(l.USER_ID) desc";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), query);
+    }
+
+    private List<Film> getPopularFilmsByDirectorAndTitle(String query) {
+        String sql = "select f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, f.RATING_ID, m.RATING " +
+                "from FILMS f " +
+                "left join RATING_MPA m on f.RATING_ID = m.RATING_ID " +
+                "left join LIKE_FILM l on f.FILM_ID = l.FILM_ID " +
+                "where f.FILM_ID in (select fd.FILM_ID " +
+                "from FILM_DIRECTOR fd, DIRECTORS d " +
+                "where fd.DIRECTOR_ID = d.DIRECTOR_ID and d.DIRECTOR_NAME ilike ? ) or f.NAME ilike ? " +
+                "group by f.FILM_ID " +
+                "order by count(l.USER_ID) desc";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), query, query);
+    }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
         int id = rs.getInt("FILM_ID");

@@ -6,7 +6,10 @@ import ru.yandex.practicum.filmorate.Exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.storage.film.*;
+import ru.yandex.practicum.filmorate.storage.film.CategoryStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.LikeFilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.EventStorage;
 
 import java.util.Comparator;
@@ -114,7 +117,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getFilmsByParams(String query, List<String> by) {
-        return categoryStorage.allFilmsCategories(filmStorage.getFilmsByQuery(query, by));
+        return filmStorage.getFilmsByQuery(query, by);
     }
     // найти фильмы по названию с сортировкой по имени и режиссеру
 

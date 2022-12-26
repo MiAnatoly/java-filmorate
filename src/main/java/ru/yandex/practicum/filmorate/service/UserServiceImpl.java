@@ -4,11 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Event;
-import ru.yandex.practicum.filmorate.model.EventType;
-import ru.yandex.practicum.filmorate.model.Operation;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.recommendation.UserBasedRating;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.LikeFilmStorage;
@@ -105,10 +101,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<Event> findAllEvent(Integer id) {
-      List<Event> events = eventStorage.findAllEvent(id);
-      if(events.isEmpty())
-          findById(id);
-      return events;
+        List<Event> events = eventStorage.findAllEvent(id);
+        if (events.isEmpty())
+            findById(id);
+        return events;
     }
 
     @Override
