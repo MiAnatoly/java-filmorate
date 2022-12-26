@@ -151,6 +151,11 @@ public class FilmServiceImpl implements FilmService {
     public List<Film> getPopularFilmsByGenreAndYear( Integer genreId, Integer year, Integer limit) {
         return filmStorage.findPopularFilmsByGenreAndYear( genreId, year, limit);
     }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
 }
 
 
