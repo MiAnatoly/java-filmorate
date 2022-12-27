@@ -126,17 +126,17 @@ public class FilmServiceImpl implements FilmService {
                 films = categoryStorage.allFilmsCategories(filmStorage.filmsByDirectorSortByYear(directorId));
                 films = films.stream().sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
                 if (films.isEmpty()) {
-                    throw new EntityNotFoundException("No films with director id : " + directorId);
+                    throw new EntityNotFoundException("Нет фильмов с продюсером id : " + directorId);
                 }
                 return films;
             case "likes":
                 films = categoryStorage.allFilmsCategories(filmStorage.filmsByDirectorSortByLikes(directorId));
                 if (films.isEmpty()) {
-                    throw new EntityNotFoundException("No films with director id : " + directorId);
+                    throw new EntityNotFoundException("Нет фильмов с продюсером id : " + directorId);
                 }
                 return films;
             default:
-                throw new ValidationException("Wrong sortType expected: {'year', 'likes'} current : " + sortType);
+                throw new ValidationException("Ошибка типа сортировки ожидается : {'year', 'likes'} текущий : " + sortType);
         }
     }
 

@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.storage.user.Impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.user.EventStorage;
@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 
-@Repository
+@Component
 public class EventDbStorageImpl implements EventStorage {
     private final JdbcTemplate jdbcTemplate;
 

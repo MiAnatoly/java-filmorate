@@ -69,7 +69,7 @@ public class DirectorDbStorageImpl implements DirectorStorage {
                 .addValue("directorName", director.getName());
         int rowsAffected = jdbcTemplate.update(sql, namedParameters);
         if (rowsAffected == 0) {
-            throw new EntityNotFoundException("No entity director with id : " + director.getId());
+            throw new EntityNotFoundException("Нет продюсера с id : " + director.getId());
         }
         return director;
     }
@@ -81,7 +81,7 @@ public class DirectorDbStorageImpl implements DirectorStorage {
                 .addValue("directorId", id);
         int rowsAffected = jdbcTemplate.update(sql, namedParameters);
         if (rowsAffected == 0) {
-            throw new EntityNotFoundException("No entity director with id : " + id);
+            throw new EntityNotFoundException("Нет продюсера с id : " + id);
         }
     }
 

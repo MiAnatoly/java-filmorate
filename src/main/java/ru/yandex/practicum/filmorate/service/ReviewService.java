@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ReviewService {
 
-    Review create(Review review); // Добавление нового отзыва.
+    Review create(Review review);
 
     Review update(Review review); // Редактирование уже имеющегося отзыва.
 

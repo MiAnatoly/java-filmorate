@@ -22,7 +22,7 @@ public class DirectorServiceImpl implements DirectorService {
     @Override
     public Director findById(int directorId) {
         return directorStorage.findById(directorId)
-                .orElseThrow(() -> new EntityNotFoundException("No director entity with id : " + directorId));
+                .orElseThrow(() -> new EntityNotFoundException("Нет продюсера с id : " + directorId));
     }
 
     @Override
