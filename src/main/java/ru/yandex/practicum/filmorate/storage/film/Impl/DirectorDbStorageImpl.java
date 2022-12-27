@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Repository
 public class DirectorDbStorageImpl implements DirectorStorage {
@@ -103,12 +102,17 @@ public class DirectorDbStorageImpl implements DirectorStorage {
                 "group by f.FILM_ID, d.DIRECTOR_ID";
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("filmIds", filmIds);
-        Stream<Map<String, Object>> stream = jdbcTemplate.queryForStream(sql, namedParameters,
-                (rs, rowNum) -> Map.ofEntries(Map.entry("filmId", rs.getInt("FILM_ID")),
-                        Map.entry("directorId", rs.getInt("DIRECTOR_ID")),
-                        Map.entry("directorName", rs.getString("DIRECTOR_NAME"))));
-        return stream.collect(Collectors.groupingBy(m -> (Integer) m.get("filmId"),
+        List<Map<String, Object>> data = jdbcTemplate.query(sql, namedParameters, this::mapDirector);
+        return data.stream().collect(Collectors.groupingBy(m -> (Integer) m.get("filmId"),
                 Collectors.mapping(m -> new Director((Integer) m.get("directorId"), (String) m.get("directorName")),
                         Collectors.toList())));
+    }
+
+    private Map<String, Object> mapDirector(ResultSet rs, int rowNum) throws SQLException {
+        int filmId = rs.getInt("FILM_ID");
+        int directorId = rs.getInt("DIRECTOR_ID");
+        String directorName = rs.getString("DIRECTOR_NAME");
+        return Map.ofEntries(Map.entry("filmId", filmId), Map.entry("directorId", directorId),
+                Map.entry("directorName", directorName));
     }
 }
