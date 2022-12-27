@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -13,23 +15,24 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+@FieldDefaults(level= AccessLevel.PRIVATE)
 public class Film {
     @EqualsAndHashCode.Exclude
-    private int id;
+    int id;
     @NotBlank
-    private String name;
+    String name;
     @NotBlank
     @Size(max = 200)
     @EqualsAndHashCode.Exclude
-    private String description;
+    String description;
     @NotNull
     @EqualsAndHashCode.Exclude
-    private LocalDate releaseDate;
+    LocalDate releaseDate;
     @Positive
     @EqualsAndHashCode.Exclude
-    private int duration;
+    int duration;
     @NotNull
-    private RatingMpa mpa;
-    private List<Category> genres;
-    private List<Director> directors;
+    RatingMpa mpa;
+    List<Category> genres;
+    List<Director> directors;
 }

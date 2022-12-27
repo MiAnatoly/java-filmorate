@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.film.ReviewStorage;
@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
-@Repository
+@Component
 @RequiredArgsConstructor
 public class ReviewDbStorageImpl implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;

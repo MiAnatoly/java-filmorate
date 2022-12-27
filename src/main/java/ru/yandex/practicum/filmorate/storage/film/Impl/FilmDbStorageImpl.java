@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.Category;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Repository
+@Component
 public class FilmDbStorageImpl implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
