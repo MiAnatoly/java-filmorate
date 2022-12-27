@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Repository
+@Component
 public class UserDbStorageImpl implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;

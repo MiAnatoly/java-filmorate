@@ -1,17 +1,20 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import java.util.Objects;
 
 @Setter
 @Getter
 @AllArgsConstructor
+@FieldDefaults(level= AccessLevel.PRIVATE)
 public class Category {
-    private Integer id;
-    private String name;
+    Integer id;
+    String name;
 
     @Override
     public boolean equals(Object o) {

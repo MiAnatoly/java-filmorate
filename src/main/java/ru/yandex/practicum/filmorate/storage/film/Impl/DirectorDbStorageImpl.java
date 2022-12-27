@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.film.DirectorStorage;
@@ -17,9 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-@Repository
+@Component
 public class DirectorDbStorageImpl implements DirectorStorage {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -70,7 +69,7 @@ public class DirectorDbStorageImpl implements DirectorStorage {
                 .addValue("directorName", director.getName());
         int rowsAffected = jdbcTemplate.update(sql, namedParameters);
         if (rowsAffected == 0) {
-            throw new EntityNotFoundException("No entity director with id : " + director.getId());
+            throw new EntityNotFoundException("Нет продюсера с id : " + director.getId());
         }
         return director;
     }
@@ -82,7 +81,7 @@ public class DirectorDbStorageImpl implements DirectorStorage {
                 .addValue("directorId", id);
         int rowsAffected = jdbcTemplate.update(sql, namedParameters);
         if (rowsAffected == 0) {
-            throw new EntityNotFoundException("No entity director with id : " + id);
+            throw new EntityNotFoundException("Нет продюсера с id : " + id);
         }
     }
 
@@ -103,12 +102,17 @@ public class DirectorDbStorageImpl implements DirectorStorage {
                 "group by f.FILM_ID, d.DIRECTOR_ID";
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("filmIds", filmIds);
-        Stream<Map<String, Object>> stream = jdbcTemplate.queryForStream(sql, namedParameters,
-                (rs, rowNum) -> Map.ofEntries(Map.entry("filmId", rs.getInt("FILM_ID")),
-                        Map.entry("directorId", rs.getInt("DIRECTOR_ID")),
-                        Map.entry("directorName", rs.getString("DIRECTOR_NAME"))));
-        return stream.collect(Collectors.groupingBy(m -> (Integer) m.get("filmId"),
+        List<Map<String, Object>> data = jdbcTemplate.query(sql, namedParameters, this::mapDirector);
+        return data.stream().collect(Collectors.groupingBy(m -> (Integer) m.get("filmId"),
                 Collectors.mapping(m -> new Director((Integer) m.get("directorId"), (String) m.get("directorName")),
                         Collectors.toList())));
+    }
+
+    private Map<String, Object> mapDirector(ResultSet rs, int rowNum) throws SQLException {
+        int filmId = rs.getInt("FILM_ID");
+        int directorId = rs.getInt("DIRECTOR_ID");
+        String directorName = rs.getString("DIRECTOR_NAME");
+        return Map.ofEntries(Map.entry("filmId", filmId), Map.entry("directorId", directorId),
+                Map.entry("directorName", directorName));
     }
 }
