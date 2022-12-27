@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.Exception.ValidationException;
@@ -18,9 +17,8 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 public class FilmController {
-    private final FilmService service;
-
     private static final LocalDate LIMIT_DATA = LocalDate.of(1895, 12, 28);
+    private final FilmService service;
 
     @GetMapping
     public List<Film> findAll() {
@@ -41,6 +39,11 @@ public class FilmController {
         return service.update(film);
     }
     // обнавить фильм
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable int id) {
+        service.deleteFilm(id);
+    }
 
     @GetMapping("/{id}")
     public Film findById(@PathVariable Integer id) {
@@ -66,10 +69,44 @@ public class FilmController {
     }
     // список из первых фильмов по лайкам
 
+    @GetMapping("/director/{directorId}")
+    public List<Film> filmsByDirectorSortByLikes(@PathVariable int directorId, @RequestParam String sortBy) {
+        return service.findFilmsByDirectorSorted(directorId, sortBy);
+    }
+
+    @GetMapping(value = "/popular", params = {"genreId"})
+    public List<Film> getPopularFilmsByGenre(@RequestParam Integer genreId,
+                                             @RequestParam(defaultValue = "10") Integer limit) {
+        return service.getPopularFilmsByGenre(genreId, limit);
+    }
+
+    @GetMapping(value = "/popular", params = {"year"})
+    public List<Film> getPopularFilmsByYear(@RequestParam Integer year,
+                                            @RequestParam(defaultValue = "10") Integer limit) {
+        return service.getPopularFilmsByYear(year, limit);
+    }
+
+    @GetMapping(value = "/popular", params = {"genreId", "year"})
+    public List<Film> getPopularFilmsByGenreAndYear(@RequestParam Integer genreId,
+                                                    @RequestParam Integer year,
+                                                    @RequestParam(defaultValue = "10") Integer limit) {
+        return service.getPopularFilmsByGenreAndYear(genreId, year, limit);
+    }
+
+    @GetMapping("/search")
+    public List<Film> getFilmsByParams(@RequestParam(defaultValue = "", required = false) String query,
+                                       @RequestParam(required = false) List<String> by) {
+        return service.getFilmsByParams(query, by);
+    }
+
     void validate(Film film) {
         if (film.getReleaseDate().isBefore(LIMIT_DATA))
             throw new ValidationException("Дата релиза не может быть раньше " + LIMIT_DATA);
-
     }
     // воспомогателльный метод проверяет дату релиза
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
+        return service.getCommonFilms(userId, friendId);
+    }
 }

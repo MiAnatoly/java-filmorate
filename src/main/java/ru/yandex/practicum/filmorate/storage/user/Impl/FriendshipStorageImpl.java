@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.storage.user.Impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.FriendshipStorage;
@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-@Repository
+@Component
 public class FriendshipStorageImpl implements FriendshipStorage {
     private final JdbcTemplate jdbcTemplate;
 
@@ -28,7 +28,7 @@ public class FriendshipStorageImpl implements FriendshipStorage {
         try {
             jdbcTemplate.update(sqlQuery, id, friendId);
         } catch (Throwable ignored) {
-          throw new NotObjectException("Пользователь с идентификатором "+ id +" или "+ friendId +" не найден.");
+            throw new NotObjectException("Пользователь с идентификатором " + id + " или " + friendId + " не найден.");
         }
     } // добавить друга
 
@@ -50,9 +50,19 @@ public class FriendshipStorageImpl implements FriendshipStorage {
         String sql = "SELECT * FROM USERS_FILMS u, FRIENDSHIP f, FRIENDSHIP o " +
                 "WHERE u.USER_ID = f.FRIEND_ID " +
                 "AND u.USER_ID = o.FRIEND_ID " +
-                "AND f.USER_ID = "+ id +" AND o.USER_ID = "+ otherId;
+                "AND f.USER_ID = " + id + " AND o.USER_ID = " + otherId;
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
     } // общие друзья
+
+    @Override
+    public void deleteAllFriendsUser(int id) {
+        String sql =
+                "DELETE " +
+                        "FROM FRIENDSHIP " +
+                        "WHERE USER_ID = ?" +
+                        "OR FRIEND_ID = ?";
+        jdbcTemplate.update(sql, id, id);
+    } // удалить всех друзей
 
     private User makeUser(ResultSet rs) throws SQLException {
         int id = rs.getInt("USER_ID");

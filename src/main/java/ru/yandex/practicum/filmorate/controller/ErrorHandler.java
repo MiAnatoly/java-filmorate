@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.filmorate.Exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.Exception.RepeatObjectException;
 import ru.yandex.practicum.filmorate.Exception.ValidationException;
@@ -39,22 +40,22 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-   @ExceptionHandler
+    @ExceptionHandler({NotObjectException.class, EntityNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleRuntime(final NotObjectException e) {
-       log.info(e.getMessage());
+    public ErrorResponse handleRuntime(final RuntimeException e) {
+        log.info(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleError(final Throwable e) {
-        log.warn(e.getMessage());
+        log.warn(e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> exc(ConstraintViolationException ex){
+    public ResponseEntity<String> exc(ConstraintViolationException ex) {
         log.debug(ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }

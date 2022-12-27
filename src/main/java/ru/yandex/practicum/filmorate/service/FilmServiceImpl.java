@@ -2,16 +2,16 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.Exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.Exception.NotObjectException;
-import ru.yandex.practicum.filmorate.model.Category;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
-import ru.yandex.practicum.filmorate.storage.film.CategoryStorage;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.LikeFilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.MpaStorage;
+import ru.yandex.practicum.filmorate.Exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.film.*;
+import ru.yandex.practicum.filmorate.storage.user.EventStorage;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +22,7 @@ public class FilmServiceImpl implements FilmService {
     private final CategoryStorage categoryStorage;
     private final MpaStorage mpaStorage;
     private final LikeFilmStorage likeFilmStorage;
+    private final EventStorage eventStorage;
 
     @Override
     public List<Film> findAll() {
@@ -31,26 +32,34 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Film create(Film film) {
-       Film film1 = filmStorage.create(film);
-       categoryStorage.createFilmCategories(film1);
-       film1.setMpa(mpaStorage.findById(film1.getMpa().getId()).orElse(null));
-       return categoryStorage.filmCategories(film1);
+        Film film1 = filmStorage.create(film);
+        categoryStorage.createFilmCategories(film1);
+        film1.setMpa(mpaStorage.findById(film1.getMpa().getId()).orElse(null));
+        return categoryStorage.filmCategories(film1);
     }
     // добавить фильм
 
     @Override
     public Film update(Film film) {
         Film film1 = filmStorage.update(film).orElseThrow(() -> new NotObjectException("нет фильма"));
-        categoryStorage.deleteFilmCategories(film1);
+        categoryStorage.deleteFilmCategories(film1.getId());
         categoryStorage.createFilmCategories(film1);
         film1.setMpa(mpaStorage.findById(film1.getMpa().getId()).orElse(null));
         return categoryStorage.filmCategories(film1);
     }
     // обнавить фильм
 
+    public void deleteFilm(int id) {
+        likeFilmStorage.removeLikesFilm(id);
+        categoryStorage.deleteFilmCategories(id);
+        filmStorage.delete(id);
+    }
+
+    // удалить фильм
     @Override
     public Film findById(Integer id) {
-        return categoryStorage.filmCategories(filmStorage.findById(id).orElseThrow(() -> new NotObjectException("нет фильма")));
+        return categoryStorage.filmCategories(filmStorage.findById(id)
+                .orElseThrow(() -> new NotObjectException("нет фильма")));
     }
     // поиск фильма по id
 
@@ -58,7 +67,8 @@ public class FilmServiceImpl implements FilmService {
     public void createLike(Integer id, Integer userId) {
         userService.findById(userId);
         findById(id);
-        likeFilmStorage.createLike(id,userId);
+        likeFilmStorage.createLike(id, userId);
+        eventStorage.create(userId, EventType.LIKE, Operation.ADD, id);
     }
     // пользователь добавляет лайк
 
@@ -66,7 +76,8 @@ public class FilmServiceImpl implements FilmService {
     public void deleteLike(Integer id, Integer userId) {
         userService.findById(userId);
         findById(id);
-        likeFilmStorage.deleteLike(id,userId);
+        likeFilmStorage.deleteLike(id, userId);
+        eventStorage.create(userId, EventType.LIKE, Operation.REMOVE, id);
     }
     // пользователь удаляет лайк
 
@@ -100,6 +111,51 @@ public class FilmServiceImpl implements FilmService {
         return mpaStorage.findById(id).orElseThrow(() -> new NotObjectException("нет категории"));
     }
     // показать рейтинг по id
+
+    @Override
+    public List<Film> getFilmsByParams(String query, List<String> by) {
+        return categoryStorage.allFilmsCategories(filmStorage.getFilmsByQuery(query, by));
+    }
+    // найти фильмы по названию с сортировкой по имени и режиссеру
+
+    @Override
+    public List<Film> findFilmsByDirectorSorted(int directorId, String sortType) {
+        List<Film> films;
+        switch (sortType) {
+            case "year":
+                films = categoryStorage.allFilmsCategories(filmStorage.filmsByDirectorSortByYear(directorId));
+                films = films.stream().sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
+                if (films.isEmpty()) {
+                    throw new EntityNotFoundException("Нет фильмов с продюсером id : " + directorId);
+                }
+                return films;
+            case "likes":
+                films = categoryStorage.allFilmsCategories(filmStorage.filmsByDirectorSortByLikes(directorId));
+                if (films.isEmpty()) {
+                    throw new EntityNotFoundException("Нет фильмов с продюсером id : " + directorId);
+                }
+                return films;
+            default:
+                throw new ValidationException("Ошибка типа сортировки ожидается : {'year', 'likes'} текущий : " + sortType);
+        }
+    }
+
+    public List<Film> getPopularFilmsByGenre( Integer genreId, Integer limit) {
+        return filmStorage.findPopularFilmsByGenre(genreId, limit);
+    }
+
+    public List<Film> getPopularFilmsByYear( Integer year, Integer limit) {
+        return filmStorage.findPopularFilmsByYear(year, limit);
+    }
+
+    public List<Film> getPopularFilmsByGenreAndYear( Integer genreId, Integer year, Integer limit) {
+        return filmStorage.findPopularFilmsByGenreAndYear( genreId, year, limit);
+    }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
 }
 
 

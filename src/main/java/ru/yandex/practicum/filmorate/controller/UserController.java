@@ -2,12 +2,13 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -35,6 +36,12 @@ public class UserController {
         return service.update(user);
     }
     // обнавить пользователя
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable int id) {
+        service.deleteUser(id);
+    }
+    // удалить пользователя
 
     @GetMapping("/{id}")
     public User findById(@PathVariable Integer id) {
@@ -66,10 +73,21 @@ public class UserController {
     }
     // найти общих друзей с пользователем
 
+    @GetMapping("/{id}/feed")
+    public List<Event> findAllEvent(@PathVariable Integer id) {
+        return service.findAllEvent(id);
+    }
+    // Возвращает ленту событий пользователя.
+
     void validate(User user) {
         if (user.getName() == null || user.getName().isBlank())
             user.setName(user.getLogin());
 
     }
     // воспомогательный метод проверяет наличие имени и в слючае отсутствия копируется из логина
+
+    @GetMapping("/{userId}/recommendations")
+    public List<Film> recommendation(@PathVariable Integer userId) {
+        return service.findRecommendations(userId);
+    }
 }

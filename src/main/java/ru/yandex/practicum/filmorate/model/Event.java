@@ -6,11 +6,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-@Setter
 @Getter
+@Setter
 @AllArgsConstructor
 @FieldDefaults(level= AccessLevel.PRIVATE)
-public class RatingMpa {
-    Integer id;
-    String name;
+public class Event {
+    Long timestamp;
+    int userId;
+    Enum<EventType> eventType;
+    Enum<Operation> operation;
+    int eventId;
+    int entityId;
 }

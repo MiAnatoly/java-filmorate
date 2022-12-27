@@ -6,7 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.Exception.NotObjectException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -16,11 +17,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
-@Repository
+@Component
 public class UserDbStorageImpl implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
@@ -71,6 +74,19 @@ public class UserDbStorageImpl implements UserStorage {
     } // обнавить пользователя
 
     @Override
+    public void deleteUser(int id) {
+        String sql =
+                "DELETE FROM USERS_FILMS " +
+                        "WHERE USER_ID = ?";
+
+        int result = jdbcTemplate.update(sql, id);
+        if (result == 1)
+            log.info("Удалён пользователь id {}", id);
+        else
+            throw new NotObjectException("Пользователь не найден для удаления.");
+    }
+
+    @Override
     public Optional<User> findById(Integer id) {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM USERS_FILMS WHERE USER_ID = ?", id);
         if (userRows.next()) {
@@ -78,6 +94,27 @@ public class UserDbStorageImpl implements UserStorage {
         } else log.info("Фильм с идентификатором {} не найден.", id);
         return Optional.empty();
     } // найти пользователя по id
+
+    @Override
+    public Map<Integer, Map<Integer, Boolean>> findAllUserFilmLike() {
+        String sql = "select uf.USER_ID, f.FILM_ID, lf.FILM_ID as IS_LIKED " +
+                "from USERS_FILMS as uf " +
+                "cross join FILMS as f " +
+                "left join LIKE_FILM as lf on f.FILM_ID = lf.FILM_ID and uf.USER_ID = lf.USER_ID";
+        List<Map<String, Object>> data = jdbcTemplate.query(sql, this::mapUserFilmLike);
+        return data.stream().collect(Collectors.groupingBy(m -> (Integer) m.get("userId"),
+                Collectors.toMap(m -> (Integer) m.get("filmId"),
+                        m -> (Boolean) m.get("isLiked"))));
+    }
+
+    private Map<String, Object> mapUserFilmLike(ResultSet rs, int rowNum) throws SQLException {
+        Integer userId = rs.getInt("USER_ID");
+        Integer filmId = rs.getInt("FILM_ID");
+        Boolean isLiked = rs.getBoolean("IS_LIKED");
+        return Map.ofEntries(Map.entry("userId", userId),
+                Map.entry("filmId", filmId),
+                Map.entry("isLiked", isLiked));
+    }
 
     private User makeUser(ResultSet rs) throws SQLException {
         int id = rs.getInt("USER_ID");

@@ -6,11 +6,21 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-@Setter
+import javax.validation.constraints.NotNull;
+
 @Getter
+@Setter
 @AllArgsConstructor
 @FieldDefaults(level= AccessLevel.PRIVATE)
-public class RatingMpa {
-    Integer id;
-    String name;
+public class Review {
+    int reviewId;
+    @NotNull
+    String content;
+    @NotNull
+    Boolean isPositive;
+    @NotNull
+    Integer userId;
+    @NotNull
+    Integer filmId;
+    int useful;
 }
