@@ -70,9 +70,7 @@ create table IF NOT EXISTS LIKE_FILM
     constraint "LIKE_FILM_FILMS_null_fk"
         foreign key (FILM_ID) references FILMS,
     constraint "LIKE_FILM_USERS_FILMS_null_fk"
-        foreign key (USER_ID) references USERS_FILMS,
-    constraint "LIKE_FILM_null_fk"
-        primary key (USER_ID, FILM_ID)
+        foreign key (USER_ID) references USERS_FILMS
 );
 
 create table IF NOT EXISTS DIRECTORS
