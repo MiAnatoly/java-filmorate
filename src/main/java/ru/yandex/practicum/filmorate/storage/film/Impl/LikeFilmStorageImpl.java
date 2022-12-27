@@ -17,7 +17,7 @@ public class LikeFilmStorageImpl implements LikeFilmStorage {
 
     @Override
     public void createLike(Integer id, Integer userId) {
-        String sqlQuery = "INSERT INTO LIKE_FILM (FILM_ID, USER_ID) " +
+        String sqlQuery = "MERGE INTO LIKE_FILM (FILM_ID, USER_ID) " +
                 "VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, id, userId);
     } // добавить лайк
